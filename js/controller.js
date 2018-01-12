@@ -1,7 +1,7 @@
 import  {view}  from "./view.js";
 import  {_getRandomIntFromInterval}  from "./utils.js";
 import {_CELL_SIZE, CSSCLASSFOR_OUR_TANK, CSSCLASSFOR_TO_TOP, CSSCLASSFOR_TO_BOTTOM, CSSCLASSFOR_TO_LEFT, CSSCLASSFOR_TO_RIGHT, CSSCLASSFOR_ENEMY_TANK, CSSCLASSFOR_ENEMY_TANK_DAMAGED} from "./consts.js";
-import {modelData, _cells, infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy} from "./model.js";
+import {modelData, _cells, infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy, modelDataOfShot} from "./model.js";
 
 // я должен из модели получить переменные для  ourTank  и enemyTank,
 // но если я их оттуда импортирую, то получаю при попытке поместить в них контруктором MakeTank в строке 51 TypeError: "ourTank" is read-only
@@ -91,7 +91,6 @@ var _createDataModelOfField = function (_rowsNumber, _cellsNumber) {
 };
 
 
-//===> В МОДУЛЬ Controller
 // контроллер может двигать любой танк, созданный конструктором, используя для отображения импортированный из view объект
 var _controllerFor_showResultOfMoving = function (kindOfTank, newRow, newCell, classOfTank) {
     //контроллер взял из модели ТАНКОВ данные о местоположении танка для удаления:
@@ -190,6 +189,418 @@ var _moveToRandomDirection = function () {
 };
 
 
+//вспомогательная функция для _createModelOfThisShotController
+var colorToDamaged = function () {
+    view.showTank(_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSSCLASSFOR_ENEMY_TANK_DAMAGED)
+};
+
+var that=this;
+//вспомогательная функция для _createModelOfThisShotController
+var isTargetedWell =  function() {    // если танк-враг на одном ряду с нашим, то пункт поражения
+
+    // у нас есть переменная directionOfOurTank, определяющая состояние направления выстрела (например, вниз-это CSSCLASSFOR_TO_BOTTOM)
+
+    // если танк на одной горизонтальной линии с врагом  ourTank.i === enemyTank.i
+    // и направление выстрела направо  directionOfOurTank === CSSCLASSFOR_TO_RIGHT
+    // и наш танк левее вражеского ourTank.j < enemyTank.j
+    // то выстрел вправо shotDirection = "right"  состояния попадания modelDataOfShot.shotHitOrOut = "hit"  точка попадания по горизонтали bullet.finalPosition_J = enemyTank.j
+    // и по вертикали пуля не смещается: _cells[ourTank.i][ourTank.j].bullet.finalPosition_I = _cells[ourTank.i][ourTank.j].bullet.startPosition_I;
+
+    if (tanksArmy.ourTank.i === tanksArmy.enemyTank.i && modelData.directionOfOurTank === CSSCLASSFOR_TO_RIGHT  && tanksArmy.ourTank.j < tanksArmy.enemyTank.j) {
+        modelDataOfShot.shotDirection = "right";
+        // то есть по горизонтальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I;
+
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = tanksArmy.enemyTank.j;
+        console.log("цель захвачена! удар по столбцу:");
+        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+        console.log("644 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
+       // that.pauseGame();
+
+        setTimeout(function () {
+            modelDataOfShot.shotHitOrOut = "out";
+            controller.startGame();
+        }, 3000);
+    }
+
+
+    // если танк НЕ на одной горизонтальной линии с врагом  ourTank.i !== enemyTank.i
+    // и направление выстрела направо  directionOfOurTank === CSSCLASSFOR_TO_RIGHT
+    if (tanksArmy.ourTank.i !== tanksArmy.enemyTank.i && modelData.directionOfOurTank === CSSCLASSFOR_TO_RIGHT) {
+        modelDataOfShot.shotDirection = "right";
+
+        //тут горизонтально он стреляет,  задаем finalPosition_I (он был null)
+        // то есть по горизонтальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I;
+        //по умолчанию он выстрелит до края поля
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _CELL_SIZE - 1;
+
+        modelDataOfShot.shotHitOrOut = "out";
+        console.log("659 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
+
+    }
+
+
+
+    // если танк НЕ на одной горизонтальной линии с врагом  ourTank.i !== enemyTank.i
+    // и направление выстрела влево  directionOfOurTank === CSSCLASSFOR_TO_LEFT
+    if (tanksArmy.ourTank.i !== tanksArmy.enemyTank.i && modelData.directionOfOurTank === CSSCLASSFOR_TO_LEFT) {
+        modelDataOfShot.shotDirection = "left";
+
+        //тут горизонтально он стреляет,  задаем finalPosition_I (он был null)
+        // то есть по горизонтальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I;
+        //по умолчанию он выстрелит до края поля
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = 0;
+
+        modelDataOfShot.shotHitOrOut = "out";
+        console.log("659 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+    }
+
+
+
+
+    // если танк на одной горизонтальной линии с врагом  ourTank.i === enemyTank.i
+    // и направление выстрела налево  directionOfOurTank === CSSCLASSFOR_TO_LEFT
+    // и наш танк левее вражеского ourTank.j < enemyTank.j
+    // то выстрел вправо shotDirection = "right"  состояния попадания shotHitOrOut = "hit"  точка попадания по горизонтали bullet.finalPosition_J = enemyTank.j
+    // и по вертикали пуля не смещается: _cells[ourTank.i][ourTank.j].bullet.finalPosition_I = _cells[ourTank.i][ourTank.j].bullet.startPosition_I;
+
+    if (tanksArmy.ourTank.i === tanksArmy.enemyTank.i && modelData.directionOfOurTank === CSSCLASSFOR_TO_LEFT  && tanksArmy.ourTank.j > tanksArmy.enemyTank.j) {
+        modelDataOfShot.shotDirection = "left";
+        // то есть по горизонтальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I;
+
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = tanksArmy.enemyTank.j;
+        console.log("цель захвачена! удар по столбцу:");
+        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+        console.log("707 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
+      //  that.pauseGame();
+
+        setTimeout(function () {
+            modelDataOfShot.shotHitOrOut = "out";
+            controller.startGame();
+        }, 3000);
+    }
+
+
+
+    // если танк на одной вертикальной линии с врагом  ourTank.j === enemyTank.j
+    // и направление выстрела вниз  directionOfOurTank === CSSCLASSFOR_TO_BOTTOM
+    // и наш танк выше вражеского ourTank.i < enemyTank.i
+    // то выстрел вправо shotDirection = "bottom"  состояния попадания shotHitOrOut = "hit"  точка попадания по горизонтали bullet.finalPosition_I = enemyTank.i
+    // и по вертикали пуля не смещается: _cells[ourTank.i][ourTank.j].bullet.finalPosition_I = _cells[ourTank.i][ourTank.j].bullet.startPosition_I;
+
+    if (tanksArmy.ourTank.j === tanksArmy.enemyTank.j && modelData.directionOfOurTank === CSSCLASSFOR_TO_BOTTOM  && tanksArmy.ourTank.i < tanksArmy.enemyTank.i) {
+        modelDataOfShot.shotDirection = "bottom";
+        // то есть по вертикальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
+
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = tanksArmy.enemyTank.i;
+        console.log("цель захвачена! удар по столбцу:");
+        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+        console.log("734 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
+       // that.pauseGame();
+
+        setTimeout(function () {
+            modelDataOfShot.shotHitOrOut = "hit";
+            controller.startGame();
+        }, 3000);
+    }
+
+
+
+
+    // если танк не на одной вертикальной линии с врагом  ourTank.j !== enemyTank.j
+    // и направление выстрела вниз  directionOfOurTank === CSSCLASSFOR_TO_BOTTOM
+    // и наш танк выше вражеского ourTank.i < enemyTank.i
+    // то выстрел вправо shotDirection = "bottom"  состояния попадания shotHitOrOut = "hit"  точка попадания по горизонтали bullet.finalPosition_I = enemyTank.i
+    // и по вертикали пуля не смещается: _cells[ourTank.i][ourTank.j].bullet.finalPosition_I = _cells[ourTank.i][ourTank.j].bullet.startPosition_I;
+
+    if (tanksArmy.ourTank.j !== tanksArmy.enemyTank.j && modelData.directionOfOurTank === CSSCLASSFOR_TO_BOTTOM) {
+        modelDataOfShot.shotDirection = "bottom";
+        // то есть по вертикальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
+
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _CELL_SIZE - 1;
+        console.log("цель захвачена! удар по столбцу:");
+        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "out";
+        console.log("762 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+    }
+
+
+
+
+    // если танк на одной вертикальной линии с врагом  ourTank.j === enemyTank.j
+    // и направление выстрела вверх  directionOfOurTank === CSSCLASSFOR_TO_TOP
+    // и наш танк ниже вражеского ourTank.i > enemyTank.i
+    // то выстрел вверх shotDirection = "top"  состояния попадания shotHitOrOut = "hit"  точка попадания по горизонтали bullet.finalPosition_I = enemyTank.i
+    // и по вертикали пуля не смещается: _cells[ourTank.i][ourTank.j].bullet.finalPosition_I = _cells[ourTank.i][ourTank.j].bullet.startPosition_I;
+
+    if (tanksArmy.ourTank.j === tanksArmy.enemyTank.j && modelData.directionOfOurTank === CSSCLASSFOR_TO_TOP  && tanksArmy.ourTank.i > tanksArmy.enemyTank.i) {
+        modelDataOfShot.shotDirection = "top";
+        // то есть по вертикальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
+
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = tanksArmy.enemyTank.i;
+        console.log("цель захвачена! удар по столбцу:");
+        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+        console.log("734 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
+       // that.pauseGame();
+
+        setTimeout(function () {
+            modelDataOfShot.shotHitOrOut = "hit";
+            controller.startGame();
+        }, 3000);
+    }
+
+
+// если танк не на одной вертикальной линии с врагом  ourTank.j !== enemyTank.j
+    // и направление выстрела вверх  directionOfOurTank === CSSCLASSFOR_TO_TOP
+    // то выстрел вверх shotDirection = "top"  состояния попадания shotHitOrOut = "hit"  точка попадания по горизонтали bullet.finalPosition_I = enemyTank.i
+    // и по вертикали пуля не смещается: _cells[ourTank.i][ourTank.j].bullet.finalPosition_I = _cells[ourTank.i][ourTank.j].bullet.startPosition_I;
+
+    if (tanksArmy.ourTank.j !== tanksArmy.enemyTank.j && modelData.directionOfOurTank === CSSCLASSFOR_TO_TOP) {
+        modelDataOfShot.shotDirection = "top";
+        // то есть по вертикальной координате неизменно пуля пойдет
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
+
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = 0;
+        console.log("цель захвачена! удар по столбцу:");
+        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "out";
+
+    }
+
+
+    console.log("693modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+} ;
+
+//вспомогательная функция для _createModelOfThisShotController
+//потом вынести в блок view
+var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, finalSpot) {
+
+
+    console.log("distanceOfShot: " +distanceOfShot);
+    console.log("positionFrom: " +positionFrom);
+    console.log("finalSpot: " +finalSpot);
+
+
+
+    var bulletElement = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.domBullet;
+    bulletElement.className = "shotMark displayAsBlock";
+
+    modelDataOfShot.start1 = Date.now();
+
+    clearInterval(modelDataOfShot.handleGun1);
+
+
+    var clearSettingsOfGun = function () {
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = null;
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J= null;
+        element1.style.left =0+ 'px';
+        element1.style.top =0+ 'px';
+    };
+
+
+
+    modelDataOfShot.handleGun1 = setInterval(function () {
+
+        var timePassed1 = Date.now() - modelDataOfShot.start1;
+
+        if(modelDataOfShot.shotDirection === "right") {element1.style.left = (timePassed1) / 2 + 'px';console.log("000");}
+        if(modelDataOfShot.shotDirection === "left") {element1.style.left = "-" +(timePassed1) / 2 + 'px';  console.log("===.");}
+        if(modelDataOfShot.shotDirection === "bottom"){element1.style.top =  (timePassed1) / 2 + 'px';}
+        if(modelDataOfShot.shotDirection === "top"){element1.style.top = "-"+(timePassed1) / 2 + 'px';}
+
+
+        if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "right") {
+            console.log("долетел!");
+            clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
+            finalSpot = null;
+            positionFrom = null;
+            distanceOfShot = null;
+            element1.className = "shotMark"; // то есть невидимый
+            var targetCell = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
+
+            if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
+
+            targetCell.dom.classList.add('red');
+            setTimeout(function () {
+                targetCell.dom.classList.remove('red');
+            }, 1000);
+
+            clearSettingsOfGun();
+
+        }
+
+        if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "left") {
+            console.log("!!!!!!!!!!!!!!");
+            clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
+            finalSpot = null;
+            positionFrom = null;
+            distanceOfShot = null;
+            element1.className = "shotMark"; // то есть невидимый
+            var targetCell2 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
+            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+            console.log("targetCell2" + targetCell2);
+            if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
+
+            targetCell2.dom.classList.add('red');
+            setTimeout(function () {
+                targetCell2.dom.classList.remove('red');
+            }, 1000);
+
+            clearSettingsOfGun();
+        }
+
+        if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "top") {
+
+            console.log("!!!!!!!!!!!!!!");
+            clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
+            finalSpot = null;
+            positionFrom = null;
+            distanceOfShot = null;
+            element1.className = "shotMark"; // то есть невидимый
+            var targetCell3 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
+            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+            console.log("targetCell2" + targetCell2);
+            if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
+
+            targetCell3.dom.classList.add('red');
+            setTimeout(function () {
+                targetCell3.dom.classList.remove('red');
+            }, 1000);
+
+            clearSettingsOfGun();
+
+        }
+        if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "bottom") {
+
+
+            console.log("-7777-");
+            clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
+            finalSpot = null;
+            positionFrom = null;
+            distanceOfShot = null;
+            element1.className = "shotMark"; // то есть невидимый
+            var targetCell4 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
+            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+            console.log("targetCell2" + targetCell2);
+            if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
+
+            targetCell4.dom.classList.add('red');
+            setTimeout(function () {
+                targetCell4.dom.classList.remove('red');
+            }, 1000);
+
+            clearSettingsOfGun();
+        }
+
+
+
+    }, 20);
+
+};
+
+
+//
+var _createModelOfThisShotController = function () {
+
+    if (!modelDataOfShot.shotState){
+        console.log("танк может стрелять 1 раз в 1 секунду");
+        return;}
+
+    //ищем танк врага
+    isTargetedWell();    // присвоит shotHitOrOut = "out" если мимо и shotHitOrOut = "hit" если в цель
+    // присвоит  shotDirection  направление выстрела, например, "left";
+
+
+    console.log("наносим удар по клетке с  координатами (i, j):");
+    console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+    console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+
+
+    var element1 = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.domBullet;
+    element1.style.left = 15 + 'px';
+
+    function getCssProperty(elem, property) {
+        return parseFloat(window.getComputedStyle(elem, null).getPropertyValue(property));
+    }
+
+
+    if (modelData.directionOfOurTank === CSSCLASSFOR_TO_RIGHT){
+        var distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J) * 20;
+        var positionFrom = getCssProperty(element1, "left");
+        var finalSpot = positionFrom + distanceOfShot;
+    }
+
+    if (modelData.directionOfOurTank === CSSCLASSFOR_TO_LEFT){
+        distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J) * 20;
+        positionFrom = getCssProperty(element1, "left");
+        finalSpot = distanceOfShot - positionFrom;
+    }
+
+    if (modelData.directionOfOurTank === CSSCLASSFOR_TO_TOP){
+
+        distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I) * 20;
+        positionFrom = getCssProperty(element1, "top");
+        finalSpot = distanceOfShot - positionFrom;
+    }
+
+    if (modelData.directionOfOurTank === CSSCLASSFOR_TO_BOTTOM){
+
+        distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I) * 20;
+        positionFrom = getCssProperty(element1, "top");
+        finalSpot = distanceOfShot - positionFrom;
+
+    }
+
+
+
+    //вот тут на 1 секунду приостанавливаем возможность выстрела
+    modelDataOfShot.shotState = false;
+
+    setTimeout(function () {
+        modelDataOfShot.shotState = true;
+    }, 1000);
+
+
+    drawBulletTrajectory1(distanceOfShot, element1, positionFrom, finalSpot);
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //вот этот экспортируемый объект controller будет в методах содержать экспортируемые методы контроллера
 let controller = {};
@@ -223,6 +634,40 @@ let controller = {};
             controllerFor_showTankFirstTime(tanksArmy.ourTank, CSSCLASSFOR_OUR_TANK);
             controllerFor_showTankFirstTime(tanksArmy.enemyTank, CSSCLASSFOR_ENEMY_TANK);
         };
+
+
+
+
+
+
+var handlePressKey = (function (e) {
+
+    if (!modelData.gameState) return;
+
+    if (e.keyCode === 38) {
+        this.move("top");
+    } else if (e.keyCode === 37) {
+        this.move("left");
+    } else if (e.keyCode === 40) {
+        this.move("bottom");
+    } else if (e.keyCode === 39) {
+        this.move("right");
+    }
+    else if (e.keyCode === 65) {
+        this.move("topleft");
+    } else if (e.keyCode === 83) {
+        this.move("topright");
+    } else if (e.keyCode === 90) {
+        this.move("bottomleft");
+    } else if (e.keyCode === 88) {
+        this.move("bottomright");
+    } else if (e.keyCode === 32) {
+        this.shot();
+    }
+}).bind(controller);
+
+
+
 
 
 //этой функцией задаем текст включателя навешивания обработчика события
@@ -385,34 +830,14 @@ controller.move = function (direction) {
 
 
 
+controller.shot = function () {
+
+    _createModelOfThisShotController();
+
+};
+
+
 export {controller};
 
 
-
-
-var handlePressKey = (function (e) {
-
-    if (!modelData.gameState) return;
-
-    if (e.keyCode === 38) {
-        this.move("top");
-    } else if (e.keyCode === 37) {
-        this.move("left");
-    } else if (e.keyCode === 40) {
-        this.move("bottom");
-    } else if (e.keyCode === 39) {
-        this.move("right");
-    }
-    else if (e.keyCode === 65) {
-        this.move("topleft");
-    } else if (e.keyCode === 83) {
-        this.move("topright");
-    } else if (e.keyCode === 90) {
-        this.move("bottomleft");
-    } else if (e.keyCode === 88) {
-        this.move("bottomright");
-    } else if (e.keyCode === 32) {
-        this.shot();
-    }
-}).bind(controller);
 

@@ -35,5 +35,14 @@ ID_Changed.forInfo = "info-cell";
 ID_Changed.forWrapper = "wrapper";
 ID_Changed.forBullet = "shotMark";
 
+
+//МОДЕЛЬ ВЫСТРЕЛА ПУЛЕЙ
+var modelDataOfShot={};
+modelDataOfShot.shotState = true;//в shotState храним состояние "в состоянии выстрела" или "не в состоянии выстрела", чтоб не стрелять повторно в момент совершаемого выстрела
+modelDataOfShot.shotHitOrOut = "out";//в shotInOrOut храним состояние "летит в цель" (Hit) или "в молоко, т.е. в край поля" (Out)
+modelDataOfShot.shotDirection = null;
+modelDataOfShot.handleGun1; // аналог handle в функции  движения танка (но тут для пули)
+modelDataOfShot.start1;// аналог start в функции  движения танка (но тут для пули)
+
 //todo : в 1 объект собрать переменные
-export {modelData, _cells,   infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy};
+export {modelData, _cells,   infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy, modelDataOfShot};
