@@ -1,7 +1,7 @@
 import  {view}  from "./view.js";
 import  {_getRandomIntFromInterval}  from "./utils.js";
 import {_CELL_SIZE, CSSCLASSFOR_OUR_TANK, CSSCLASSFOR_TO_TOP, CSSCLASSFOR_TO_BOTTOM, CSSCLASSFOR_TO_LEFT, CSSCLASSFOR_TO_RIGHT, CSSCLASSFOR_ENEMY_TANK, CSSCLASSFOR_ENEMY_TANK_DAMAGED} from "./consts.js";
-import {directionOfOurTank, modelData, _cells, infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy} from "./model.js";
+import {modelData, _cells, infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy} from "./model.js";
 
 // я должен из модели получить переменные для  ourTank  и enemyTank,
 // но если я их оттуда импортирую, то получаю при попытке поместить в них контруктором MakeTank в строке 51 TypeError: "ourTank" is read-only
@@ -39,7 +39,7 @@ var controllerFor_showTankFirstTime = function (kindOfTank, classOfTank) {
     //отдал для отображения данные двух моделей:
     view.showTank(element, classOfTank);
 
-    console.log("направление выстрела: " +directionOfOurTank);
+    console.log("направление выстрела: " +modelData.directionOfOurTank);
 
 };
 
@@ -102,15 +102,15 @@ var _controllerFor_showResultOfMoving = function (kindOfTank, newRow, newCell, c
     var elementForDeleting = _cells[i][j].dom;
 
     view.deleteTank(elementForDeleting, classOfTank);
-    if (kindOfTank===tanksArmy.ourTank) { view.clearTankDirection(elementForDeleting);}
+    if (kindOfTank===tanksArmy.ourTank) { view.clearTankDirection(elementForDeleting, CSSCLASSFOR_TO_RIGHT, CSSCLASSFOR_TO_TOP, CSSCLASSFOR_TO_BOTTOM, CSSCLASSFOR_TO_LEFT);}
 
     //контроллер  взял DOM-элемент DIV-клетки из модели ПОЛЯ (для вставки в неё танка), newRow и newCell- это дельта сдвига:
     var elementForNewShowing = _cells[i + newRow][j + newCell].dom;
     //отдал для отображения данные двух моделей
-    view.showTank(elementForNewShowing, classOfTank, directionOfOurTank);
+    view.showTank(elementForNewShowing, classOfTank, modelData.directionOfOurTank);
     //(и из модели о направлении танка directionOfOurTank взял направление):
-    if (kindOfTank===tanksArmy.ourTank) { view.showTankDirection(elementForNewShowing, directionOfOurTank);
-        console.log("направление выстрела: " +directionOfOurTank)}
+    if (kindOfTank===tanksArmy.ourTank) { view.showTankDirection(elementForNewShowing, modelData.directionOfOurTank);
+        console.log("направление выстрела: " +modelData.directionOfOurTank)}
 
 };
 
@@ -256,6 +256,134 @@ controller.startGame = function () {
 
     }, 1000);
 };
+
+
+
+
+
+
+
+controller.move = function (direction) {
+
+                if (!modelData.gameState) {
+                    console.log("танк может двигаться 1 раз в секунду");
+                    return;}
+
+                var newRow = 0;
+                var newCell = 0;
+
+                var directionOfMove = {
+                    top: function () {
+                        //если танк уже смотрит в эту сторону, то идет на клетку вверх
+                        if(modelData.directionOfOurTank === CSSCLASSFOR_TO_TOP){
+                            newRow = -1;
+                            return;
+                        }
+                        //иначе только разворачивается (без движения) в заданную сторону
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_TOP;
+
+                    },
+                    bottom: function () {
+
+                        //если танк уже смотрит в эту сторону, то идет на клетку вверх
+                        if(modelData.directionOfOurTank === CSSCLASSFOR_TO_BOTTOM){
+                            newRow = 1;
+                            return;
+                        }
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_BOTTOM;
+
+                    },
+                    left: function () {
+
+
+                        //если танк уже смотрит в эту сторону, то идет на клетку вверх
+                        if(modelData.directionOfOurTank === CSSCLASSFOR_TO_LEFT){
+                            newCell = -1;
+                            return;
+                        }
+                        //иначе только разворачивается (без движения) в заданную сторону
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_LEFT;
+
+                    },
+                    right: function () {
+
+                        //если танк уже смотрит в эту сторону, то идет на клетку вверх
+                        if(modelData.directionOfOurTank === CSSCLASSFOR_TO_RIGHT){
+                            newCell = 1;
+                            return;
+                        }
+                        //иначе только разворачивается (без движения) в заданную сторону
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_RIGHT;
+
+                    },
+                    topleft: function () {
+                        newRow = -1;
+                        newCell = -1;
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_TOP;
+                    },
+                    topright: function () {
+                        newRow = -1;
+                        newCell = 1;
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_TOP;
+                    },
+                    bottomleft: function () {
+                        newRow = 1;
+                        newCell = -1;
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_BOTTOM;
+                    },
+                    bottomright: function () {
+                        newRow = 1;
+                        newCell = 1;
+                        modelData.directionOfOurTank = CSSCLASSFOR_TO_BOTTOM;
+                    },
+
+                };
+
+
+                directionOfMove[direction]();
+
+
+                //не даём выехать за пределы поля
+                if ((tanksArmy.ourTank.i + newRow) > (_CELL_SIZE - 1)) {
+                    console.log("край поля!");
+                    return;
+                }
+                if ((tanksArmy.ourTank.j + newCell) > (_CELL_SIZE - 1)) {
+                    console.log("край поля!");
+                    return;
+                }
+                if ((tanksArmy.ourTank.i + newRow) < 0) {
+                    console.log("край поля!");
+                    return;
+                }
+                if ((tanksArmy.ourTank.j + newCell) < 0) {
+                    console.log("край поля!");
+                    return;
+                }
+
+            //!!!!и тут, если var newRow = 0;  var newCell = 0; только разворот произойдет через новое значение CSSCLASSFOR_OUR_TANK
+                _controllerFor_showResultOfMoving(tanksArmy.ourTank, newRow, newCell, CSSCLASSFOR_OUR_TANK);
+
+            //вот тут на 1 секунду приостанавливаем возможность передвигать танк
+    modelData.gameState = false;
+
+                setTimeout(function () {
+                    modelData.gameState = true;
+                }, 1000);
+
+            //в модели обновляем данные
+    tanksArmy.ourTank.i = tanksArmy.ourTank.i + newRow;
+    tanksArmy.ourTank.j = tanksArmy.ourTank.j + newCell;
+
+
+            };
+
+
+
+
+
+
+
 
 
 export {controller};

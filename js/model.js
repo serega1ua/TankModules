@@ -1,5 +1,3 @@
-var directionOfOurTank = "ToRight"; //тут будем хранить направление танка (куда смотрит), первое значение "ToRight"
-
 var modelData={};
 modelData.gameState = null;
 modelData.start = null; // тут хранить время начала
@@ -7,6 +5,7 @@ modelData.handle = null; // через эту глобальную переме�
 modelData.timePassed = null; //тут будем хранить время, прошедшее ДО паузы, чтоб учитывать в общем времени игру ДО паузы через pauseGame()
 modelData.timeOfWholeGame = 0;// тут хранить длительность всей игры с учетом пауз
 modelData.TIMEOFGAME = 77000000; //сколько будет работать один сеанс игры
+modelData.directionOfOurTank = "ToRight"; //тут будем хранить направление танка (куда смотрит), первое значение "ToRight"
 
 var _cells = []; // в массиве _cells  будет модель "чистых" данных о том, что в клетках
 var tanksArmy = {};
@@ -37,4 +36,4 @@ ID_Changed.forWrapper = "wrapper";
 ID_Changed.forBullet = "shotMark";
 
 //todo : в 1 объект собрать переменные
-export {directionOfOurTank, modelData, _cells,   infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy};
+export {modelData, _cells,   infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy};

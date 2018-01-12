@@ -96,7 +96,7 @@ view.showTankDirection = function (elementDOM, direction) {
 };
 
 
-view.clearTankDirection = function (elementDOM) {
+view.clearTankDirection = function (elementDOM, CSSCLASSFOR_TO_RIGHT, CSSCLASSFOR_TO_TOP, CSSCLASSFOR_TO_BOTTOM, CSSCLASSFOR_TO_LEFT) {
     //и надо очистить клетку от css-класса направления,
     // тут одно из 4-х направлений, очищаем от всех
     elementDOM.classList.remove(CSSCLASSFOR_TO_RIGHT);
