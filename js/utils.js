@@ -1,3 +1,4 @@
-/**
- * Created by Sony on 09.01.2018.
- */
+function _getRandomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+export {_getRandomIntFromInterval};

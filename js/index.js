@@ -1,10 +1,4 @@
+ import {controller}  from "./controller.js";
 
-//Поэтому ES-модули используются в сочетании с системами сборки, такими как webpack, brunch и другими, при подключённом Babel.JS.
-
-//Сейчас используются системы сборки, как правило, в сочетании с Babel.JS.
-//Система сборки обрабатывает скрипты, находит в них import/export и заменяет их на свои внутренние JavaScript-вызовы.
-
-
-import {one, two} from "const.js";
-
-alert(one); // 1 and 2
+  controller.init(document.getElementById("forGameContainer"));//создаём поле, передавая html-контейнер
+  controller.startGame();
