@@ -225,9 +225,14 @@ let controller = {};
         };
 
 
-
+//этой функцией задаем текст включателя навешивания обработчика события
+controller.setEventListener = function  (){document.addEventListener("keydown",  handlePressKey);} ;
 
 controller.startGame = function () {
+
+//включаем тут обработчик нажатия клавиш, чтоб не включать из файла index.js
+    this.setEventListener();
+
 
     modelData.gameState = true;
     modelData.start = Date.now();//  взяли время старта функции startGame
@@ -380,7 +385,7 @@ controller.move = function (direction) {
 
 
 
-export {controller, setEventListener};
+export {controller};
 
 
 
@@ -411,5 +416,3 @@ var handlePressKey = (function (e) {
     }
 }).bind(controller);
 
-
- function setEventListener (){document.addEventListener("keydown",  handlePressKey);} ;
