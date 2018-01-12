@@ -380,10 +380,36 @@ controller.move = function (direction) {
 
 
 
+export {controller, setEventListener};
 
 
 
 
+var handlePressKey = (function (e) {
+
+    if (!modelData.gameState) return;
+
+    if (e.keyCode === 38) {
+        this.move("top");
+    } else if (e.keyCode === 37) {
+        this.move("left");
+    } else if (e.keyCode === 40) {
+        this.move("bottom");
+    } else if (e.keyCode === 39) {
+        this.move("right");
+    }
+    else if (e.keyCode === 65) {
+        this.move("topleft");
+    } else if (e.keyCode === 83) {
+        this.move("topright");
+    } else if (e.keyCode === 90) {
+        this.move("bottomleft");
+    } else if (e.keyCode === 88) {
+        this.move("bottomright");
+    } else if (e.keyCode === 32) {
+        this.shot();
+    }
+}).bind(controller);
 
 
-export {controller};
+ function setEventListener (){document.addEventListener("keydown",  handlePressKey);} ;
