@@ -2,21 +2,31 @@ let view = {};
 
 
 view.consoleLog = function (textForConsole, ...rest) {
-    if (rest[2]) {
+    if (2 in rest) {
         console.log(textForConsole + rest[0] + rest[1] + rest[2]);
         return;
     }
-    if (rest[1]) {
+    if (1 in rest) {
         console.log(textForConsole + rest[0] + rest[1]);
         return;
     }
-    if (rest[0]) {
+    if (0 in rest) {
         console.log(textForConsole + rest[0]);
         return;
     }
 
     console.log(textForConsole);
 };
+
+
+
+view.consoleDir = function (objForConsole) {
+    console.dir(objForConsole);
+};
+
+
+
+
 
 // view.renderField:
 // -получает от контроллера данные о модели поля _cells

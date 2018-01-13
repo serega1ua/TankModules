@@ -49,9 +49,9 @@ var createTanksByConstructor = function  () {
     tanksArmy.ourTank = new MakeTank(utils.getRandomIntFromInterval(0, _CELL_SIZE - 1), utils.getRandomIntFromInterval(0, _CELL_SIZE - 1), "ally");
     tanksArmy.enemyTank = new MakeTank(utils.getRandomIntFromInterval(1, _CELL_SIZE - 1), utils.getRandomIntFromInterval(1, _CELL_SIZE - 1), "enemy");
     view.consoleLog("создали конструктором наш танк:");
-    console.dir(tanksArmy.ourTank);
+    view.consoleDir(tanksArmy.ourTank);
     view.consoleLog("создали конструктором чужой танк:");
-    console.dir(tanksArmy.enemyTank);
+    view.consoleDir(tanksArmy.enemyTank);
 };
 
 
@@ -87,7 +87,8 @@ var _createDataModelOfField = function (_rowsNumber, _cellsNumber) {
         });
     }
 
-    console.dir(_cells);
+    view.consoleLog("вот массив с моделью поля:");
+    view.consoleDir(_cells);
 };
 
 
@@ -404,13 +405,10 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
 //потом вынести в блок view
 var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, finalSpot) {
 
-    view.consoleLog ("!distanceOfShot: ", distanceOfShot);
-     view.consoleLog ("!positionFrom: ", positionFrom);
-     view.consoleLog ("!finalSpot: ", finalSpot);
+    view.consoleLog ("distanceOfShot: ", distanceOfShot);
+     view.consoleLog ("positionFrom: ", positionFrom);
+     view.consoleLog ("finalSpot: ", finalSpot);
 
-    // console.log("distanceOfShot: " +distanceOfShot);
-    // console.log("positionFrom: " +positionFrom);
-    // console.log("finalSpot: " +finalSpot);
 
 
 
@@ -442,7 +440,7 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
 
         if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "right") {
-            view.consoleLog("!!!долетел!");
+            view.consoleLog("долетел!");
             clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
             finalSpot = null;
             positionFrom = null;
@@ -469,8 +467,8 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
             distanceOfShot = null;
             element1.className = "shotMark"; // то есть невидимый
             var targetCell2 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
-            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
-            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
 
 
             if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
@@ -492,8 +490,8 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
             distanceOfShot = null;
             element1.className = "shotMark"; // то есть невидимый
             var targetCell3 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
-            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
-            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
 
 
             if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
@@ -516,8 +514,8 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
             distanceOfShot = null;
             element1.className = "shotMark"; // то есть невидимый
             var targetCell4 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
-            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
-            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
 
 
             if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
@@ -620,7 +618,7 @@ let controller = {};
             //рисуем поле, сначала приняли контейнер или задали свой, если не был передан в вызове
             if (typeof contianer === 'undefined') {
                 var container = document.body;
-                console.warn("Обратите внимание вы не передали контейнер и поле будет document.body");
+                view.consoleLog("Обратите внимание вы не передали контейнер и поле будет document.body");
             }
 
 
@@ -650,7 +648,7 @@ let controller = {};
 
 var handlePressKey = (function (e) {
 
-    if (!modelData.gameState) {  console.log(" танк может двигаться 1 раз в секунду"); return;}
+    if (!modelData.gameState) {  view.consoleLog("Так, танк может двигаться 1 раз в секунду"); return;}
 
     if (e.keyCode === 38) {
         this.move("top");
@@ -689,7 +687,7 @@ controller.startGame = function () {
 
     modelData.gameState = true;
     modelData.start = Date.now();//  взяли время старта функции startGame
-    console.log("Игра в конкретном сеансе стартовала в  " + new Date(modelData.start).toString().slice(16, 24));
+    view.consoleLog("Игра в конкретном сеансе стартовала в  ", new Date(modelData.start).toString().slice(16, 24));
 
     clearInterval(modelData.handle); // на всякий случай отменили этот же setInterval, если запущен уже
 
@@ -702,7 +700,7 @@ controller.startGame = function () {
         //   console.log("В этом сеансе прошло   " + timePassed / 1000 + "секунд");
 
         if (modelData.timePassed >= modelData.TIMEOFGAME) {
-            console.log("Истекло максимальное время сеанса, оно составляло " + timeOfGame);
+            view.consoleLog("Истекло максимальное время сеанса, оно составляло ", timeOfGame);
             clearInterval(handle); // конец через столько-то секунд
            controller.endGame();
             return;
@@ -721,8 +719,8 @@ controller.pauseGame = function () {
     modelData.gameState = false;
     modelData.timeOfWholeGame = modelData.timeOfWholeGame + (modelData.timePassed / 1000); // плюсуем время конкрктного сеанса до pauseGame()
 
-    console.log("ПАУЗА. До паузы в этом сеансе игры прошло   " + modelData.timePassed / 1000 + " секунд");
-    console.log("Сейчас общее время игры   " + modelData.timeOfWholeGame + " секунд");
+    view.consoleLog("ПАУЗА. До паузы в этом сеансе игры прошло   ", modelData.timePassed / 1000,  " секунд");
+    view.consoleLog("Сейчас общее время игры   ", modelData.timeOfWholeGame, " секунд");
     // добавляем время, которое прошло перед паузой через pauseGame()
     clearInterval(modelData.handle);
     modelData.timePassed = 0; //обнуляем, чтоб второй раз этот сеанс не был посчитан при вызове   endGame() после  вызова pauseGame()
@@ -730,15 +728,15 @@ controller.pauseGame = function () {
 
 
 controller.endGame = function () {
-    console.log("gameState = " + modelData.gameState);
+    view.consoleLog("gameState = ", modelData.gameState);
     modelData.gameState = false;
     modelData.timeOfWholeGame = modelData.timeOfWholeGame + (modelData.timePassed / 1000); // плюсуем время конкрктного сеанса до endGame()
     clearInterval(modelData.handle);
-    if (modelData.timeOfWholeGame) console.log("КОНЕЦ ИГРЫ. Игра длилась " + modelData.timeOfWholeGame + " сек.");
-    else if (!modelData.timeOfWholeGame) console.log("нет данных о длительности игры");
+    if (modelData.timeOfWholeGame) view.consoleLog("КОНЕЦ ИГРЫ. Игра длилась ", modelData.timeOfWholeGame, " сек.");
+    else if (!modelData.timeOfWholeGame) view.consoleLog("нет данных о длительности игры");
     // start = Date.now();
     modelData.timeOfWholeGame = 0;
-    console.log("конец игры, счетчик времени игры обнулён");
+    view.consoleLog("конец игры, счетчик времени игры обнулён");
     this.init(document.getElementById("forGameContainer"));
 };
 
@@ -749,7 +747,7 @@ controller.move = function (direction) {
 
                 if (!modelData.gameState) {
 
-                     console.log("222танк может двигаться 1 раз в секунду");
+                     view.consoleLog("Вау, танк-то может двигаться 1 раз в секунду");
                     return;}
 
                 var newRow = 0;
@@ -828,19 +826,19 @@ controller.move = function (direction) {
 
                 //не даём выехать за пределы поля
                 if ((tanksArmy.ourTank.i + newRow) > (_CELL_SIZE - 1)) {
-                    console.log("край поля!");
+                    view.consoleLog("край поля!");
                     return;
                 }
                 if ((tanksArmy.ourTank.j + newCell) > (_CELL_SIZE - 1)) {
-                    console.log("край поля!");
+                    view.consoleLog("край поля!");
                     return;
                 }
                 if ((tanksArmy.ourTank.i + newRow) < 0) {
-                    console.log("край поля!");
+                    view.consoleLog("край поля!");
                     return;
                 }
                 if ((tanksArmy.ourTank.j + newCell) < 0) {
-                    console.log("край поля!");
+                    view.consoleLog("край поля!");
                     return;
                 }
 
