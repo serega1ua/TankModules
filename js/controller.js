@@ -20,7 +20,7 @@ var MakeTank = function (i, j, enemyOrAlly) {
 };
 
 MakeTank.prototype.shotByGun = function () {
-    console.log(this.name + " have been shotted ")
+    view.consoleLog(this.name, " have been shotted ")
 };
 
 
@@ -39,7 +39,7 @@ var controllerFor_showTankFirstTime = function (kindOfTank, classOfTank) {
     //отдал для отображения данные двух моделей:
     view.showTank(element, classOfTank);
 
-    console.log("направление выстрела: " +modelData.directionOfOurTank);
+    view.consoleLog("направление выстрела: ", modelData.directionOfOurTank);
 
 };
 
@@ -48,9 +48,9 @@ var controllerFor_showTankFirstTime = function (kindOfTank, classOfTank) {
 var createTanksByConstructor = function  () {
     tanksArmy.ourTank = new MakeTank(utils.getRandomIntFromInterval(0, _CELL_SIZE - 1), utils.getRandomIntFromInterval(0, _CELL_SIZE - 1), "ally");
     tanksArmy.enemyTank = new MakeTank(utils.getRandomIntFromInterval(1, _CELL_SIZE - 1), utils.getRandomIntFromInterval(1, _CELL_SIZE - 1), "enemy");
-    console.log("создали конструктором наш танк:");
+    view.consoleLog("создали конструктором наш танк:");
     console.dir(tanksArmy.ourTank);
-    console.log("создали конструктором чужой танк:");
+    view.consoleLog("создали конструктором чужой танк:");
     console.dir(tanksArmy.enemyTank);
 };
 
@@ -109,7 +109,7 @@ var _controllerFor_showResultOfMoving = function (kindOfTank, newRow, newCell, c
     view.showTank(elementForNewShowing, classOfTank, modelData.directionOfOurTank);
     //(и из модели о направлении танка directionOfOurTank взял направление):
     if (kindOfTank===tanksArmy.ourTank) { view.showTankDirection(elementForNewShowing, modelData.directionOfOurTank);
-        console.log("направление выстрела: " +modelData.directionOfOurTank)}
+        view.consoleLog("направление выстрела: ", modelData.directionOfOurTank)}
 
 };
 
@@ -343,7 +343,7 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         // console.log("цель захвачена! удар по столбцу:");
         // console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
         modelDataOfShot.shotHitOrOut = "out";
-        console.log("762 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
     }
 
 
@@ -435,14 +435,14 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
         var timePassed1 = Date.now() - modelDataOfShot.start1;
 
-        if(modelDataOfShot.shotDirection === "right") {element1.style.left = (timePassed1) / 2 + 'px';console.log("000");}
-        if(modelDataOfShot.shotDirection === "left") {element1.style.left = "-" +(timePassed1) / 2 + 'px';  console.log("===.");}
+        if(modelDataOfShot.shotDirection === "right") {element1.style.left = (timePassed1) / 2 + 'px';}
+        if(modelDataOfShot.shotDirection === "left") {element1.style.left = "-" +(timePassed1) / 2 + 'px';}
         if(modelDataOfShot.shotDirection === "bottom"){element1.style.top =  (timePassed1) / 2 + 'px';}
         if(modelDataOfShot.shotDirection === "top"){element1.style.top = "-"+(timePassed1) / 2 + 'px';}
 
 
         if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "right") {
-            console.log("долетел!");
+            view.consoleLog("!!!долетел!");
             clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
             finalSpot = null;
             positionFrom = null;
@@ -462,17 +462,17 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
         }
 
         if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "left") {
-            console.log("!!!!!!!!!!!!!!");
+
             clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
             finalSpot = null;
             positionFrom = null;
             distanceOfShot = null;
             element1.className = "shotMark"; // то есть невидимый
             var targetCell2 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
-            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
-            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
 
-            console.log("targetCell2" + targetCell2);
+
             if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
 
             targetCell2.dom.classList.add('red');
@@ -485,17 +485,17 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
         if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "top") {
 
-            console.log("!!!!!!!!!!!!!!");
+
             clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
             finalSpot = null;
             positionFrom = null;
             distanceOfShot = null;
             element1.className = "shotMark"; // то есть невидимый
             var targetCell3 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
-            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
-            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
 
-            console.log("targetCell2" + targetCell2);
+
             if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
 
             targetCell3.dom.classList.add('red');
@@ -509,17 +509,17 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
         if (((timePassed1) / 2) >= finalSpot && modelDataOfShot.shotDirection === "bottom") {
 
 
-            console.log("-7777-");
+
             clearInterval(modelDataOfShot.handleGun1); // конец через столько-то секунд
             finalSpot = null;
             positionFrom = null;
             distanceOfShot = null;
             element1.className = "shotMark"; // то есть невидимый
             var targetCell4 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
-            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
-            console.log("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J" + _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
+            view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
 
-            console.log("targetCell2" + targetCell2);
+
             if (  modelDataOfShot.shotHitOrOut === "hit"){  colorToDamaged();}
 
             targetCell4.dom.classList.add('red');
@@ -541,7 +541,7 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 var _createModelOfThisShotController = function () {
 
     if (!modelDataOfShot.shotState){
-        console.log("танк может стрелять 1 раз в 1 секунду");
+        view.consoleLog("танк может стрелять 1 раз в 1 секунду");
         return;}
 
     //ищем танк врага
@@ -549,9 +549,10 @@ var _createModelOfThisShotController = function () {
     // присвоит  shotDirection  направление выстрела, например, "left";
 
 
-    console.log("наносим удар по клетке с  координатами (i, j):");
-    console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
-    console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+    view.consoleLog("наносим удар по клетке с  координатами (i / j): ",
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I, " / ",
+        _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J );
+
 
 
 
@@ -609,16 +610,6 @@ var _createModelOfThisShotController = function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
 //вот этот экспортируемый объект controller будет в методах содержать экспортируемые методы контроллера
 let controller = {};
 
@@ -659,7 +650,7 @@ let controller = {};
 
 var handlePressKey = (function (e) {
 
-    if (!modelData.gameState) return;
+    if (!modelData.gameState) {  console.log(" танк может двигаться 1 раз в секунду"); return;}
 
     if (e.keyCode === 38) {
         this.move("top");
@@ -757,7 +748,8 @@ controller.endGame = function () {
 controller.move = function (direction) {
 
                 if (!modelData.gameState) {
-                    console.log("танк может двигаться 1 раз в секунду");
+
+                     console.log("222танк может двигаться 1 раз в секунду");
                     return;}
 
                 var newRow = 0;

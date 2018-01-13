@@ -1,8 +1,21 @@
 let view = {};
 
 
-view.consoleLog = function (textForConsole, variableForConsole) {
-    console.log(textForConsole + variableForConsole);
+view.consoleLog = function (textForConsole, ...rest) {
+    if (rest[2]) {
+        console.log(textForConsole + rest[0] + rest[1] + rest[2]);
+        return;
+    }
+    if (rest[1]) {
+        console.log(textForConsole + rest[0] + rest[1]);
+        return;
+    }
+    if (rest[0]) {
+        console.log(textForConsole + rest[0]);
+        return;
+    }
+
+    console.log(textForConsole);
 };
 
 // view.renderField:
