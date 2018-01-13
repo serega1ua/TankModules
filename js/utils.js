@@ -1,4 +1,14 @@
-function _getRandomIntFromInterval(min, max) {
+let utils = {};
+
+//генерирует случ.значения в заданном диапазоне
+utils.getRandomIntFromInterval = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
-}
-export {_getRandomIntFromInterval};
+};
+
+//извлекает значение css-свойства
+utils.getCssProperty = function (elem, property) {
+    return parseFloat(window.getComputedStyle(elem, null).getPropertyValue(property));
+};
+
+
+export {utils};

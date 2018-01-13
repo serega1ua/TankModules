@@ -1,5 +1,10 @@
 let view = {};
 
+
+view.consoleLog = function (textForConsole, variableForConsole) {
+    console.log(textForConsole + variableForConsole);
+};
+
 // view.renderField:
 // -получает от контроллера данные о модели поля _cells
 // -получает от контроллера данные о тексте инфо-панели infoPanelText

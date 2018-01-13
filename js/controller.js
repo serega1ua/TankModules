@@ -1,5 +1,5 @@
 import  {view}  from "./view.js";
-import  {_getRandomIntFromInterval}  from "./utils.js";
+import  {utils}  from "./utils.js";
 import {_CELL_SIZE, CSSCLASSFOR_OUR_TANK, CSSCLASSFOR_TO_TOP, CSSCLASSFOR_TO_BOTTOM, CSSCLASSFOR_TO_LEFT, CSSCLASSFOR_TO_RIGHT, CSSCLASSFOR_ENEMY_TANK, CSSCLASSFOR_ENEMY_TANK_DAMAGED} from "./consts.js";
 import {modelData, _cells, infoPanelText, CSS_Classses_Changed, ID_Changed, tanksArmy, modelDataOfShot} from "./model.js";
 
@@ -46,8 +46,8 @@ var controllerFor_showTankFirstTime = function (kindOfTank, classOfTank) {
 
 
 var createTanksByConstructor = function  () {
-    tanksArmy.ourTank = new MakeTank(_getRandomIntFromInterval(0, _CELL_SIZE - 1), _getRandomIntFromInterval(0, _CELL_SIZE - 1), "ally");
-    tanksArmy.enemyTank = new MakeTank(_getRandomIntFromInterval(1, _CELL_SIZE - 1), _getRandomIntFromInterval(1, _CELL_SIZE - 1), "enemy");
+    tanksArmy.ourTank = new MakeTank(utils.getRandomIntFromInterval(0, _CELL_SIZE - 1), utils.getRandomIntFromInterval(0, _CELL_SIZE - 1), "ally");
+    tanksArmy.enemyTank = new MakeTank(utils.getRandomIntFromInterval(1, _CELL_SIZE - 1), utils.getRandomIntFromInterval(1, _CELL_SIZE - 1), "enemy");
     console.log("создали конструктором наш танк:");
     console.dir(tanksArmy.ourTank);
     console.log("создали конструктором чужой танк:");
@@ -177,7 +177,7 @@ var _moveToRandomDirection = function () {
 
     };
 
-    var random = _getRandomIntFromInterval(0, Object.keys(sides).length - 1);
+    var random = utils.getRandomIntFromInterval(0, Object.keys(sides).length - 1);
 
     //взяли рэндомно свойство с функцией в нём
     var arr = Object.keys(sides)[random];
@@ -212,12 +212,13 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I;
 
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = tanksArmy.enemyTank.j;
-        console.log("цель захвачена! удар по столбцу:");
-        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
-        modelDataOfShot.shotHitOrOut = "hit";
-        console.log("644 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
 
-       // that.pauseGame();
+        view.consoleLog("!цель захвачена! удар по столбцу: ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        // console.log("цель захвачена! удар по столбцу:");
+        // console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+
+         controller.pauseGame();
 
         setTimeout(function () {
             modelDataOfShot.shotHitOrOut = "out";
@@ -238,7 +239,7 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _CELL_SIZE - 1;
 
         modelDataOfShot.shotHitOrOut = "out";
-        console.log("659 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
 
 
     }
@@ -257,7 +258,7 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = 0;
 
         modelDataOfShot.shotHitOrOut = "out";
-        console.log("659 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
+
     }
 
 
@@ -275,12 +276,15 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I;
 
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = tanksArmy.enemyTank.j;
-        console.log("цель захвачена! удар по столбцу:");
-        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
-        modelDataOfShot.shotHitOrOut = "hit";
-        console.log("707 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
 
-      //  that.pauseGame();
+        view.consoleLog("!цель захвачена! удар по столбцу: ",_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+        // console.log("цель захвачена! удар по столбцу:");
+        // console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+
+
+        controller.pauseGame();
 
         setTimeout(function () {
             modelDataOfShot.shotHitOrOut = "out";
@@ -302,12 +306,15 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
 
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = tanksArmy.enemyTank.i;
-        console.log("цель захвачена! удар по столбцу:");
-        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
-        modelDataOfShot.shotHitOrOut = "hit";
-        console.log("734 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
 
-       // that.pauseGame();
+
+        view.consoleLog("!цель захвачена! удар по столбцу: ",_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+        // console.log("цель захвачена! удар по столбцу:");
+        // console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+
+        controller.pauseGame();
 
         setTimeout(function () {
             modelDataOfShot.shotHitOrOut = "hit";
@@ -330,8 +337,11 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
 
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = _CELL_SIZE - 1;
-        console.log("цель захвачена! удар по столбцу:");
-        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+        view.consoleLog("!цель захвачена! удар по столбцу: ",_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+        // console.log("цель захвачена! удар по столбцу:");
+        // console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
         modelDataOfShot.shotHitOrOut = "out";
         console.log("762 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
     }
@@ -351,12 +361,14 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
 
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = tanksArmy.enemyTank.i;
-        console.log("цель захвачена! удар по столбцу:");
-        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
-        modelDataOfShot.shotHitOrOut = "hit";
-        console.log("734 modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
 
-       // that.pauseGame();
+        view.consoleLog("!цель захвачена! удар по столбцу: ",_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+        // console.log("цель захвачена! удар по столбцу:");
+        // console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+        modelDataOfShot.shotHitOrOut = "hit";
+
+        controller.pauseGame();
 
         setTimeout(function () {
             modelDataOfShot.shotHitOrOut = "hit";
@@ -376,24 +388,29 @@ var isTargetedWell =  function() {    // если танк-враг на одн�
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J;
 
         _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I = 0;
-        console.log("цель захвачена! удар по столбцу:");
-        console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+        view.consoleLog("!цель захвачена! удар по столбцу: ",_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
+
+        // console.log("цель захвачена! удар по столбцу:");
+        // console.log(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
         modelDataOfShot.shotHitOrOut = "out";
 
     }
 
 
-    console.log("693modelDataOfShot.shotHitOrOut == " + modelDataOfShot.shotHitOrOut);
 } ;
 
 //вспомогательная функция для _createModelOfThisShotController
 //потом вынести в блок view
 var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, finalSpot) {
 
+    view.consoleLog ("!distanceOfShot: ", distanceOfShot);
+     view.consoleLog ("!positionFrom: ", positionFrom);
+     view.consoleLog ("!finalSpot: ", finalSpot);
 
-    console.log("distanceOfShot: " +distanceOfShot);
-    console.log("positionFrom: " +positionFrom);
-    console.log("finalSpot: " +finalSpot);
+    // console.log("distanceOfShot: " +distanceOfShot);
+    // console.log("positionFrom: " +positionFrom);
+    // console.log("finalSpot: " +finalSpot);
 
 
 
@@ -541,34 +558,34 @@ var _createModelOfThisShotController = function () {
     var element1 = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.domBullet;
     element1.style.left = 15 + 'px';
 
-    function getCssProperty(elem, property) {
-        return parseFloat(window.getComputedStyle(elem, null).getPropertyValue(property));
-    }
+    // function getCssProperty(elem, property) {
+    //     return parseFloat(window.getComputedStyle(elem, null).getPropertyValue(property));
+    // }
 
 
     if (modelData.directionOfOurTank === CSSCLASSFOR_TO_RIGHT){
         var distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J) * 20;
-        var positionFrom = getCssProperty(element1, "left");
+        var positionFrom = utils.getCssProperty(element1, "left");
         var finalSpot = positionFrom + distanceOfShot;
     }
 
     if (modelData.directionOfOurTank === CSSCLASSFOR_TO_LEFT){
         distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_J - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J) * 20;
-        positionFrom = getCssProperty(element1, "left");
+        positionFrom = utils.getCssProperty(element1, "left");
         finalSpot = distanceOfShot - positionFrom;
     }
 
     if (modelData.directionOfOurTank === CSSCLASSFOR_TO_TOP){
 
         distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I) * 20;
-        positionFrom = getCssProperty(element1, "top");
+        positionFrom = utils.getCssProperty(element1, "top");
         finalSpot = distanceOfShot - positionFrom;
     }
 
     if (modelData.directionOfOurTank === CSSCLASSFOR_TO_BOTTOM){
 
         distanceOfShot = (_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I - _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.startPosition_I) * 20;
-        positionFrom = getCssProperty(element1, "top");
+        positionFrom = utils.getCssProperty(element1, "top");
         finalSpot = distanceOfShot - positionFrom;
 
     }
@@ -696,19 +713,43 @@ controller.startGame = function () {
         if (modelData.timePassed >= modelData.TIMEOFGAME) {
             console.log("Истекло максимальное время сеанса, оно составляло " + timeOfGame);
             clearInterval(handle); // конец через столько-то секунд
-           // that.endGame();
+           controller.endGame();
             return;
         }
 
 
          _moveToRandomDirection();
-        console.log("сделан посекундный шаг танка");
+
 
     }, 1000);
 };
 
 
 
+controller.pauseGame = function () {
+    modelData.gameState = false;
+    modelData.timeOfWholeGame = modelData.timeOfWholeGame + (modelData.timePassed / 1000); // плюсуем время конкрктного сеанса до pauseGame()
+
+    console.log("ПАУЗА. До паузы в этом сеансе игры прошло   " + modelData.timePassed / 1000 + " секунд");
+    console.log("Сейчас общее время игры   " + modelData.timeOfWholeGame + " секунд");
+    // добавляем время, которое прошло перед паузой через pauseGame()
+    clearInterval(modelData.handle);
+    modelData.timePassed = 0; //обнуляем, чтоб второй раз этот сеанс не был посчитан при вызове   endGame() после  вызова pauseGame()
+};
+
+
+controller.endGame = function () {
+    console.log("gameState = " + modelData.gameState);
+    modelData.gameState = false;
+    modelData.timeOfWholeGame = modelData.timeOfWholeGame + (modelData.timePassed / 1000); // плюсуем время конкрктного сеанса до endGame()
+    clearInterval(modelData.handle);
+    if (modelData.timeOfWholeGame) console.log("КОНЕЦ ИГРЫ. Игра длилась " + modelData.timeOfWholeGame + " сек.");
+    else if (!modelData.timeOfWholeGame) console.log("нет данных о длительности игры");
+    // start = Date.now();
+    modelData.timeOfWholeGame = 0;
+    console.log("конец игры, счетчик времени игры обнулён");
+    this.init(document.getElementById("forGameContainer"));
+};
 
 
 
