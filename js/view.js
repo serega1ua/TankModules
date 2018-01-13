@@ -24,6 +24,22 @@ view.consoleDir = function (objForConsole) {
     console.dir(objForConsole);
 };
 
+view.toZero = function (element1) {
+element1.style.left =0+ 'px';
+element1.style.top =0+ 'px'; };
+
+
+view.leftStyleSet = function (element1, pixels) {
+    element1.style.left = pixels + 'px'; };
+
+
+
+
+
+view.toright = function (element1, timePassed1) {element1.style.left = (timePassed1) / 2 + 'px';};
+view.toleft = function (element1, timePassed1) {element1.style.left = "-" +(timePassed1) / 2 + 'px';};
+view.tobottom = function (element1, timePassed1) {element1.style.top =  (timePassed1) / 2 + 'px';};
+view.totop = function (element1, timePassed1) {element1.style.top = "-"+(timePassed1) / 2 + 'px';};
 
 
 
