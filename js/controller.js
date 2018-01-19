@@ -1006,7 +1006,7 @@ controller.move = function (direction) {
 
     setTimeout(function () {
         modelData.gameState = true;
-    }, 20);
+    }, 500);
 
     //в модели обновляем данные
     tanksArmy.ourTank.i = tanksArmy.ourTank.i + newRow;
