@@ -76,6 +76,11 @@ var createTanksByConstructor = function () {
     view.consoleDir(tanksArmy.enemyTank);
 };
 
+//снижение здоровья танка
+var minusHealth = function (tank) {
+    //снижаем здоровье  объекта танка
+    tank.health = tank.health - 1;
+};
 
 //это внутри контроллера оставим, тут берем из импортированных данных массив-модель поля _cells
 // и создаем новые данные о нем, сохраняя в этот же массив в модуле  model.js модели
@@ -188,6 +193,10 @@ var showRadarEffect = function (newRowForEnemy, newCellForEnemy, newRowForOur, n
 };
 
 
+
+
+
+
 var moveEnemyTank = function (newRow, newCell) {
 
 
@@ -218,12 +227,16 @@ var moveEnemyTank = function (newRow, newCell) {
     if (isOnTheSameGorizontalLine(tanksArmy.enemyTank, tanksArmy.ourTank, newRow) && isShotDistanceBetweenTanks(tanksArmy.enemyTank, tanksArmy.ourTank, newCell, "GorizontalLine")) {
         view.consoleLog("на одной горизонтали и ближе 4 клеток!");
         showRadarEffect(newRow, newCell, 0, 0);
+        minusHealth (tanksArmy.ourTank);
+        view.consoleLog("здоровье tanksArmy.ourTank = ", tanksArmy.ourTank.health);
     }
 
     //срабатывание радара, если возможен выстрел по вертикали
     if (isOnTheSameVerticalLine(tanksArmy.enemyTank, tanksArmy.ourTank, newCell) && isShotDistanceBetweenTanks(tanksArmy.enemyTank, tanksArmy.ourTank, newRow, "VerticalLine")) {
         view.consoleLog("на одной вертикали и ближе 4 клеток!");
         showRadarEffect(newRow, newCell, 0, 0);
+        minusHealth (tanksArmy.ourTank);
+        view.consoleLog("здоровье tanksArmy.ourTank = ", tanksArmy.ourTank.health);
 
     }
 
@@ -543,6 +556,9 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
             if (modelDataOfShot.shotHitOrOut === "hit") {
                 colorToDamaged();
+
+                minusHealth (tanksArmy.enemyTank);
+                view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
             }
 
 
@@ -577,6 +593,10 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
             if (modelDataOfShot.shotHitOrOut === "hit") {
                 colorToDamaged();
+
+                minusHealth (tanksArmy.enemyTank);
+                view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
+
             }
 
 
@@ -611,6 +631,9 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
             if (modelDataOfShot.shotHitOrOut === "hit") {
                 colorToDamaged();
+
+                minusHealth (tanksArmy.enemyTank);
+                view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
             }
 
             //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе
@@ -645,6 +668,9 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
             if (modelDataOfShot.shotHitOrOut === "hit") {
                 colorToDamaged();
+
+                minusHealth (tanksArmy.enemyTank);
+                view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
             }
 
             //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе
@@ -1006,7 +1032,7 @@ controller.move = function (direction) {
 
     setTimeout(function () {
         modelData.gameState = true;
-    }, 500);
+    }, 1000);
 
     //в модели обновляем данные
     tanksArmy.ourTank.i = tanksArmy.ourTank.i + newRow;
