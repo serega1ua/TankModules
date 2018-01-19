@@ -293,7 +293,10 @@ var _moveToRandomDirection = function () {
 
 //вспомогательная функция для _createModelOfThisShotController
 var colorToDamaged = function () {
-    view.showTank(_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSSCLASSFOR_ENEMY_TANK_DAMAGED)
+    view.showTank(_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSSCLASSFOR_ENEMY_TANK_DAMAGED);
+
+
+
 };
 
 
@@ -559,6 +562,8 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
                 minusHealth (tanksArmy.enemyTank);
                 view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
+
+                view.addAndRemoveCssClassInTime (_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSS_Classses_Changed.moveRight, 1000);
             }
 
 
@@ -596,6 +601,7 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
                 minusHealth (tanksArmy.enemyTank);
                 view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
+                view.addAndRemoveCssClassInTime (_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSS_Classses_Changed.moveLeft, 1000);
 
             }
 
@@ -634,6 +640,7 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
                 minusHealth (tanksArmy.enemyTank);
                 view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
+                view.addAndRemoveCssClassInTime (_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSS_Classses_Changed.moveTop, 1000);
             }
 
             //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе
@@ -671,6 +678,7 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
                 minusHealth (tanksArmy.enemyTank);
                 view.consoleLog("здоровье tanksArmy.enemyTank = ", tanksArmy.enemyTank.health);
+                view.addAndRemoveCssClassInTime (_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSS_Classses_Changed.moveBottom, 1000);
             }
 
             //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе

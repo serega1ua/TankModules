@@ -36,6 +36,11 @@ CSS_Classses_Changed.forLocator ="locator";
 CSS_Classses_Changed.forEnemyTankOnRadar ="cellWithEnemyTankOnRadar";
 CSS_Classses_Changed.forTarget ="target";
 
+CSS_Classses_Changed.moveBottom ="moveBottom";
+CSS_Classses_Changed.moveTop ="moveTop";
+CSS_Classses_Changed.moveLeft ="moveLeft";
+CSS_Classses_Changed.moveRight ="moveRight";
+
 //тут все id-индентификаторы, их достаточно изменить в модели и css-файле
 var ID_Changed = {};
 ID_Changed.forInfo = "info-cell";

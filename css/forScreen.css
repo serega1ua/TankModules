@@ -239,12 +239,188 @@ display: block !important;
 
 
 
+.moveRight {
+    -webkit-animation: to-right .9s;
+    animation: to-right .9s;
+
+}
+
+
+
+ @-webkit-keyframes to-right {
+     0% {
+         margin-left:  0px;
+         margin-right:  0px;
+
+     }
+     100% {
+         margin-left: 10px;
+         margin-right:  -10px;
+     }
+ }
+
+ @keyframes to-right {
+     0% {
+         margin-left:  0px;
+         margin-right:  0px;
+
+     }
+     100% {
+         margin-left: 10px;
+         margin-right:  -10px;
+     }
+ }
+
+
+
+.moveLeft {
+    -webkit-animation: to-left .9s;
+    animation: to-left .9s;
+
+}
+
+
+
+ @-webkit-keyframes to-left {
+     0% {
+         margin-left:  0px;
+         margin-right:  0px;
+
+     }
+     100% {
+         margin-left:  -10px;
+         margin-right:  10px;
+     }
+ }
+
+ @keyframes to-left {
+     0% {
+         margin-left:  0px;
+         margin-right:  0px;
+
+     }
+     100% {
+         margin-left:  -10px;
+         margin-right:  10px;
+     }
+ }
 
 
 
 
 
-/*излучение радара*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ .moveTop {
+     -webkit-animation: to-top .9s;
+     animation: to-top .9s;
+
+ }
+
+
+
+ @-webkit-keyframes to-top {
+     0% {
+         margin-top:  0px;
+         margin-bottom:  0px;
+
+     }
+     100% {
+         margin-top:  -10px;
+         margin-bottom:  10px;
+     }
+ }
+
+ @keyframes to-top {
+     0% {
+         margin-top:  0px;
+         margin-bottom:  0px;
+
+     }
+     100% {
+         margin-top:  -10px;
+         margin-bottom:  10px;
+     }
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+ .moveBottom {
+     -webkit-animation: to-bottom .9s;
+     animation: to-bottom .9s;
+
+ }
+
+
+
+ @-webkit-keyframes to-bottom {
+     0% {
+         margin-top:  0px;
+         margin-bottom:  0px;
+
+     }
+     100% {
+         margin-top:  10px;
+         margin-bottom:  -10px;
+     }
+ }
+
+ @keyframes to-bottom {
+     0% {
+         margin-top:  0px;
+         margin-bottom:  0px;
+
+     }
+     100% {
+         margin-top:  10px;
+         margin-bottom:  -10px;
+     }
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ /*излучение радара*/
  .locator:after {
      content: '';
      position: absolute;
@@ -256,8 +432,6 @@ display: block !important;
      animation: click-wave .9s;
      background-color: #2196F3;
  }
-
-
 
 
 
