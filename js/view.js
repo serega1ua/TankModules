@@ -25,13 +25,43 @@ view.consoleDir = function (objForConsole) {
 };
 
 view.toZero = function (element1) {
-element1.style.left =0+ 'px';
-element1.style.top =0+ 'px'; };
+element1.style.left =10+ 'px';
+element1.style.top =10+ 'px'; };
 
 
 view.leftStyleSet = function (element1, pixels) {
     element1.style.left = pixels + 'px'; };
 
+
+view.setCssClass = function (element, CssClass) {
+    element.className = CssClass; };
+
+
+
+view.addCssClass = function (element, CssClass) {
+
+    element.classList.add(CssClass);
+
+      };
+
+
+view.removeCssClass = function (element, CssClass) {
+
+    element.classList.remove(CssClass);
+
+      };
+
+
+
+view.addAndRemoveCssClassInTime = function (element, CssClass, TimeOfShowing) {
+
+    element.classList.add(CssClass);
+
+    setTimeout(function () {
+        element.classList.remove(CssClass);
+    }, TimeOfShowing);
+
+};
 
 
 

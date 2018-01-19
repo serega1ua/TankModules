@@ -1,3 +1,13 @@
+//todo чтоб не сталкивались танк и вражеский танк (сделать вынесенную функцию проверки)
+// todo чтоб не сталкивались танк и уже подбитый вражеский танк (сделать вынесенную функцию проверки)
+
+//создаем третий (потом и четвертый через 20 секунд) танк (неподбиваемый) и подлаживаем под него многократное использование функций выстрела и передвижения
+//todo функцию выстрела вынести так, чтоб ее мог использовать третий танк
+//todo функцию перемещения вынести так, чтоб ее мог использовать третий танк
+//стараемся все функции подробить на более мелкие и понятные (делает одну вещь)
+//графику улучшить
+
+
 import  {view}  from "./view.js";
 import  {utils}  from "./utils.js";
 import {
@@ -108,8 +118,21 @@ var _controllerFor_showResultOfMoving = function (kindOfTank, newRow, newCell, c
 
     //контроллер  взял DOM-элемент DIV-клетки из модели ПОЛЯ (для удаления из неё танка):
     var elementForDeleting = _cells[i][j].dom;
+    //    view.addAndRemoveCssClassInTime(_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSS_Classses_Changed.forTarget, 500);
 
     view.deleteTank(elementForDeleting, classOfTank);
+
+    //удаляем значок прицела на вражеском танке, на случай, если тот уехал раньше, чем значок сам исчез
+    view.deleteTank(elementForDeleting, CSS_Classses_Changed.forTarget);
+
+    //и очищаем значок радара или прицела на случай, если наш танк ходит (чтоб радар не оставался на месте танка после его ухода с этой клетке)
+    var elementBulletForDeleting = _cells[i][j].bullet.domBullet;
+    if (elementBulletForDeleting) {
+        view.deleteTank(elementBulletForDeleting, CSS_Classses_Changed.forRadar1);
+        view.deleteTank(elementBulletForDeleting, CSS_Classses_Changed.forRadar);
+    }
+
+
     if (kindOfTank === tanksArmy.ourTank) {
         view.clearTankDirection(elementForDeleting, CSSCLASSFOR_TO_RIGHT, CSSCLASSFOR_TO_TOP, CSSCLASSFOR_TO_BOTTOM, CSSCLASSFOR_TO_LEFT);
     }
@@ -127,9 +150,49 @@ var _controllerFor_showResultOfMoving = function (kindOfTank, newRow, newCell, c
 };
 
 
+//функция проверяет, будут ли танки на одной горизонтали после смещения по горизонтали на deltaOfMovingGoriz
+var isOnTheSameGorizontalLine = function (tank1, tank2, deltaOfMovingGoriz) {
+    if ((tank1.i + deltaOfMovingGoriz) === tank2.i) return true
+};
+
+//функция проверяет, будут ли танки на одной вертикали после смещения по горизонтали на deltaOfMovingVert
+var isOnTheSameVerticalLine = function (tank1, tank2, deltaOfMovingVert) {
+    if ((tank1.j + deltaOfMovingVert) === tank2.j) return true
+};
+
+//если ближе количества  клеток modelData.distanceOfShotForEnemy, то вражеский танк поражает излучением
+var isShotDistanceBetweenTanks = function (tank1, tank2, deltaOfMoving, lineGorOrVert) {
+    if ((lineGorOrVert === "GorizontalLine") && (Math.abs((tank1.j + deltaOfMoving) - tank2.j) < modelData.distanceOfShotForEnemy)) {
+        // view.consoleLog("Math.abs((tank1.j + deltaOfMoving) - tank2.j) < 4");
+        // view.consoleLog((tank1.j + deltaOfMoving), " and ", tank2.j);
+        return true;
+    }
+    if ((lineGorOrVert === "VerticalLine") && (Math.abs((tank1.i + deltaOfMoving) - tank2.i) < modelData.distanceOfShotForEnemy)) {
+        // view.consoleLog("Math.abs((tank1.i + deltaOfMoving) - tank2.i)) < 4");
+        // view.consoleLog((tank1.i + deltaOfMoving), " and ", tank2.i);
+        return true;
+    }
+};
+
+
+//визуальный эффект радара
+var showRadarEffect = function (newRowForEnemy, newCellForEnemy, newRowForOur, newCellForOur) {
+    //эффект на нашем танке
+    view.addAndRemoveCssClassInTime(_cells[tanksArmy.ourTank.i + newRowForOur][tanksArmy.ourTank.j + newCellForOur].bullet.domBullet, "opacity", 300);
+    view.addAndRemoveCssClassInTime(_cells[tanksArmy.ourTank.i + newRowForOur][tanksArmy.ourTank.j + newCellForOur].bullet.domBullet, CSS_Classses_Changed.forRadar, 1000);
+
+    //эффект на вражеском танке
+    view.addAndRemoveCssClassInTime(_cells[tanksArmy.enemyTank.i + newRowForEnemy][tanksArmy.enemyTank.j + newCellForEnemy].dom, "opacity", 300);
+    view.addAndRemoveCssClassInTime(_cells[tanksArmy.enemyTank.i + newRowForEnemy][tanksArmy.enemyTank.j + newCellForEnemy].dom, CSS_Classses_Changed.forLocator, 300);
+    view.addAndRemoveCssClassInTime(_cells[tanksArmy.enemyTank.i + newRowForEnemy][tanksArmy.enemyTank.j + newCellForEnemy].dom, CSS_Classses_Changed.forEnemyTankOnRadar, 1000);
+};
+
+
 var moveEnemyTank = function (newRow, newCell) {
 
+
     //в 4-х if ниже не даём выехать за пределы поляи "отталкиваем" его от прилипания к краю поля
+
     if ((tanksArmy.enemyTank.i + newRow) > (_CELL_SIZE - 1)) {
         newRow = newRow - 2;
     }
@@ -141,6 +204,27 @@ var moveEnemyTank = function (newRow, newCell) {
     }
     if ((tanksArmy.enemyTank.j + newCell) < 0) {
         newCell = newCell + 2;
+    }
+
+    //это запрет цели наезжать на танк при хаотичном её движении, просто смещение в случае наезда задается как ноль по обеим координатам
+// а при следующем смещении она поедет дальше, следующие случайные координаты её передвижения не совпадут/ лишнюю секунду цель простоит на месте тут
+    if (isOnTheSameVerticalLine(tanksArmy.enemyTank, tanksArmy.ourTank, newCell) && isOnTheSameGorizontalLine(tanksArmy.enemyTank, tanksArmy.ourTank, newRow)) {
+        view.consoleLog("цель боится наезжать на танк");
+        newRow = 0;
+        newCell = 0;
+    }
+
+//срабатывание радара, если возможен выстрел по горизонтали. newRow - это будущее смещение по горизонтали
+    if (isOnTheSameGorizontalLine(tanksArmy.enemyTank, tanksArmy.ourTank, newRow) && isShotDistanceBetweenTanks(tanksArmy.enemyTank, tanksArmy.ourTank, newCell, "GorizontalLine")) {
+        view.consoleLog("на одной горизонтали и ближе 4 клеток!");
+        showRadarEffect(newRow, newCell, 0, 0);
+    }
+
+    //срабатывание радара, если возможен выстрел по вертикали
+    if (isOnTheSameVerticalLine(tanksArmy.enemyTank, tanksArmy.ourTank, newCell) && isShotDistanceBetweenTanks(tanksArmy.enemyTank, tanksArmy.ourTank, newRow, "VerticalLine")) {
+        view.consoleLog("на одной вертикали и ближе 4 клеток!");
+        showRadarEffect(newRow, newCell, 0, 0);
+
     }
 
 
@@ -406,7 +490,12 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
 
 
     var bulletElement = _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.domBullet;
-    bulletElement.className = "shotMark displayAsBlock";
+
+//отдаем в view-модель для показа потем добавления css-класса
+    view.setCssClass(bulletElement, CSS_Classses_Changed.forVisibleBullet);
+
+    //bulletElement.className = CSS_Classses_Changed.forVisibleBullet;
+
 
     modelDataOfShot.start1 = Date.now();
 
@@ -448,17 +537,24 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
             finalSpot = null;
             positionFrom = null;
             distanceOfShot = null;
-            element1.className = "shotMark"; // то есть невидимый
+            view.setCssClass(element1, CSS_Classses_Changed.forBullet);
+            //element1.className = CSS_Classses_Changed.forBullet; // то есть невидимый
             var targetCell = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
 
             if (modelDataOfShot.shotHitOrOut === "hit") {
                 colorToDamaged();
             }
 
-            targetCell.dom.classList.add('red');
-            setTimeout(function () {
-                targetCell.dom.classList.remove('red');
-            }, 1000);
+
+            //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе
+            // используем её для случаев "показался и исчез через секунду" (в данном случае взрыв)
+            view.addAndRemoveCssClassInTime(targetCell.dom, CSS_Classses_Changed.forExplosion, 1000);
+
+            // view.addCssClass (targetCell.dom, 'red');
+            // //targetCell.dom.classList.add('red');
+            // setTimeout(function () {
+            //     targetCell.dom.classList.remove('red');
+            // }, 1000);
 
             clearSettingsOfGun();
 
@@ -470,7 +566,10 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
             finalSpot = null;
             positionFrom = null;
             distanceOfShot = null;
-            element1.className = "shotMark"; // то есть невидимый
+
+            view.setCssClass(element1, CSS_Classses_Changed.forBullet);
+            //element1.className = CSS_Classses_Changed.forBullet; // то есть невидимый
+
             var targetCell2 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
             view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
             view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
@@ -480,10 +579,16 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
                 colorToDamaged();
             }
 
-            targetCell2.dom.classList.add('red');
-            setTimeout(function () {
-                targetCell2.dom.classList.remove('red');
-            }, 1000);
+
+            //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе
+            // используем её для случаев "показался и исчез через секунду" (в данном случае взрыв)
+            view.addAndRemoveCssClassInTime(targetCell2.dom, CSS_Classses_Changed.forExplosion, 1000);
+
+            //  view.addCssClass (targetCell2.dom, 'red');
+            // // targetCell2.dom.classList.add('red');
+            //  setTimeout(function () {
+            //      targetCell2.dom.classList.remove('red');
+            //  }, 1000);
 
             clearSettingsOfGun();
         }
@@ -495,7 +600,10 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
             finalSpot = null;
             positionFrom = null;
             distanceOfShot = null;
-            element1.className = "shotMark"; // то есть невидимый
+
+            view.setCssClass(element1, CSS_Classses_Changed.forBullet);
+
+            //element1.className = CSS_Classses_Changed.forBullet; // то есть невидимый
             var targetCell3 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
             view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
             view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
@@ -505,10 +613,14 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
                 colorToDamaged();
             }
 
-            targetCell3.dom.classList.add('red');
-            setTimeout(function () {
-                targetCell3.dom.classList.remove('red');
-            }, 1000);
+            //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе
+            // используем её для случаев "показался и исчез через секунду" (в данном случае взрыв)
+            view.addAndRemoveCssClassInTime(targetCell3.dom, CSS_Classses_Changed.forExplosion, 1000);
+
+            //targetCell3.dom.classList.add('red');
+            // setTimeout(function () {
+            //     targetCell3.dom.classList.remove('red');
+            // }, 1000);
 
             clearSettingsOfGun();
 
@@ -520,7 +632,12 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
             finalSpot = null;
             positionFrom = null;
             distanceOfShot = null;
-            element1.className = "shotMark"; // то есть невидимый
+
+            view.setCssClass(element1, CSS_Classses_Changed.forBullet);
+
+            // element1.className = CSS_Classses_Changed.forBullet; // то есть невидимый
+
+
             var targetCell4 = _cells[_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I][_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J];
             view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_I);
             view.consoleLog("_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J : ", _cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.finalPosition_J);
@@ -530,10 +647,16 @@ var drawBulletTrajectory1 = function (distanceOfShot, element1, positionFrom, fi
                 colorToDamaged();
             }
 
-            targetCell4.dom.classList.add('red');
-            setTimeout(function () {
-                targetCell4.dom.classList.remove('red');
-            }, 1000);
+            //эта  функция принимает dom-элемент, сss-класс и время, которое этот сss-класс висит на элементе
+            // используем её для случаев "показался и исчез через секунду" (в данном случае взрыв)
+            view.addAndRemoveCssClassInTime(targetCell4.dom, CSS_Classses_Changed.forExplosion, 1000);
+
+
+            //  view.addCssClass (targetCell4.dom, 'red');
+            // // targetCell4.dom.classList.add('red');
+            //  setTimeout(function () {
+            //      targetCell4.dom.classList.remove('red');
+            //  }, 1000);
 
             clearSettingsOfGun();
         }
@@ -844,15 +967,46 @@ controller.move = function (direction) {
         return;
     }
 
+
+//срабатывание прицела, если возможен выстрел по горизонтали
+    if (isOnTheSameGorizontalLine(tanksArmy.ourTank, tanksArmy.enemyTank, newRow)) {
+        view.consoleLog("11на одной горизонтали!", tanksArmy.ourTank.i, tanksArmy.ourTank.j);
+
+        view.addAndRemoveCssClassInTime(_cells[tanksArmy.ourTank.i + newRow][tanksArmy.ourTank.j + newCell].bullet.domBullet, CSS_Classses_Changed.forRadar1, 200);
+
+
+        //target
+        //эффект на вражеском танке
+
+        view.addAndRemoveCssClassInTime(_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSS_Classses_Changed.forTarget, 500);
+    }
+
+    //срабатывание прицела если возможен выстрел по вертикали
+    if (isOnTheSameVerticalLine(tanksArmy.ourTank, tanksArmy.enemyTank, newCell)) {
+        view.consoleLog("11на одной вертикали!", tanksArmy.ourTank.i, tanksArmy.ourTank.j);
+
+        view.addAndRemoveCssClassInTime(_cells[tanksArmy.ourTank.i + newRow][tanksArmy.ourTank.j + newCell].bullet.domBullet, CSS_Classses_Changed.forRadar1, 200);
+
+        //   view.addAndRemoveCssClassInTime(_cells[tanksArmy.ourTank.i+newRow][tanksArmy.ourTank.j+newCell].bullet.domBullet, CSS_Classses_Changed.forRadar, 1000);
+
+        view.addAndRemoveCssClassInTime(_cells[tanksArmy.enemyTank.i][tanksArmy.enemyTank.j].dom, CSS_Classses_Changed.forTarget, 500);
+
+    }
+
+
     //!!!!и тут, если var newRow = 0;  var newCell = 0; только разворот произойдет через новое значение CSSCLASSFOR_OUR_TANK
     _controllerFor_showResultOfMoving(tanksArmy.ourTank, newRow, newCell, CSSCLASSFOR_OUR_TANK);
+
+    //и еще очищаем появляющееся на 1 сек. изображение радара на случай, если в эту секунду танк успел уйти
+    // view.removeCssClass(_cells[tanksArmy.ourTank.i][tanksArmy.ourTank.j].bullet.domBullet, CSS_Classses_Changed.forRadar);
+
 
     //вот тут на 1 секунду приостанавливаем возможность передвигать танк
     modelData.gameState = false;
 
     setTimeout(function () {
         modelData.gameState = true;
-    }, 1000);
+    }, 20);
 
     //в модели обновляем данные
     tanksArmy.ourTank.i = tanksArmy.ourTank.i + newRow;

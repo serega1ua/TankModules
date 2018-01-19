@@ -6,6 +6,7 @@ modelData.timePassed = null; //тут будем хранить время, пр
 modelData.timeOfWholeGame = 0;// тут хранить длительность всей игры с учетом пауз
 modelData.TIMEOFGAME = 77000000; //сколько будет работать один сеанс игры
 modelData.directionOfOurTank = "ToRight"; //тут будем хранить направление танка (куда смотрит), первое значение "ToRight"
+modelData.distanceOfShotForEnemy = 7;
 
 var _cells = []; // в массиве _cells  будет модель "чистых" данных о том, что в клетках
 var tanksArmy = {};
@@ -27,7 +28,13 @@ CSS_Classses_Changed.forInfoPanel = "info";
 CSS_Classses_Changed.forInsideCell ="inside-cell";
 CSS_Classses_Changed.forFirstInRowInsideCell = "clear-both inside-cell";
 CSS_Classses_Changed.forBullet = "shotMark";
-
+CSS_Classses_Changed.forVisibleBullet = "shotMark displayAsBlock"
+CSS_Classses_Changed.forRadar ="displayAsBlockAndReady";
+CSS_Classses_Changed.forRadar1 ="displayAsBlockAndReady1";
+CSS_Classses_Changed.forExplosion ="red";
+CSS_Classses_Changed.forLocator ="locator";
+CSS_Classses_Changed.forEnemyTankOnRadar ="cellWithEnemyTankOnRadar";
+CSS_Classses_Changed.forTarget ="target";
 
 //тут все id-индентификаторы, их достаточно изменить в модели и css-файле
 var ID_Changed = {};
