@@ -1,0 +1,29 @@
+{
+  "name": "tankmodules",
+  "version": "1.0.0",
+  "description": "There's an example of my js-code.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serega1ua/TankModules.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serega1ua/TankModules/issues"
+  },
+  "homepage": "https://github.com/serega1ua/TankModules#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "gulp": "^3.9.1",
+    "gulp-better-rollup": "^3.0.0",
+    "gulp-build": "^0.5.3",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "rollup-plugin-babel": "^3.0.3"
+  }
+}
