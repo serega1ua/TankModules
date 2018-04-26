@@ -1,8 +1,7 @@
 'use strict';
 
-/* Object.defineProperty(exports, '__esModule', { value: true });
- */
- 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 let utils = {};
 
 //генерирует случ.значения в заданном диапазоне
@@ -2215,4 +2214,4 @@ btn2.addEventListener("click", controller.pauseGame.bind(controller));
 var btn3 = document.getElementById("btnStop");
 btn3.addEventListener("click", controller.endGame.bind(controller));
 
-/* exports.controller = controller; */
+exports.controller = controller;

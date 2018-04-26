@@ -49,7 +49,7 @@ gulp.task('build', function() {
  /* взял и сократил с https://www.npmjs.com/package/gulp-better-rollup */
  
 gulp.task('lib-build', () => {
-  gulp.src(['./app/js/consts.js', './app/js/controller.js', './app/js/index.js', './app/js/model.js', './app/js/utils.js', './app/js/view.js'])
+  gulp.src(['./app/js/model.js', './app/js/consts.js',   './app/js/utils.js' , './app/js/viewMovingModule.js',  './app/js/view.js', './app/js/controller.js'])
       .pipe(rollup({
         plugins: [babel()]
     }, {
