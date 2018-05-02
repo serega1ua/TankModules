@@ -87,12 +87,21 @@ tanksArmy.ourTank = null;
 tanksArmy.enemyTank = null;
 tanksArmy.locatorTank = null;
 
-var infoPanelText = (`<pre> press keys \u2190 \u2191 \u2192 \u2193 for moving to the left, right, top, bottom
-     press 'a' for moving to the top-left \u2196
-     press 's' for moving to the top-right \u2197
-     press 'z' for moving to the bottom-left \u2199
-     press 'x' for moving to the bottom-right \u2198
-     press 'space' to make a shot</pre>`);
+var infoPanelText = (` 
+	<p>Вы - это танк в поле из клеток. Против Вас: вражеский вертолет и авто-локатор.</p>
+	<p>Для старта игры нажать кнопку <span>"Start"</span>.</p>
+	<p>Используйте кнопки на клавиатуре <span>&#x2190; &#x2191; &#x2192; &#x2193;</span>  для движения Вашего танка.</p>
+	<p>Можем двигать наш танк по диагонали: <span>'a' &#x2196;, 's'  &#x2197;, 'z'  &#x2199;,'x'  &#x2198;</span>.  </p>
+	<p>Ходить можно <span>1 раз в секунду</span>.</p>
+	<p>Кнопка <span>"Пробел"('Space')</span> - выстрел.</p>
+	<p>Вертолет врага может поражать Вас поражающим излучением, если он <span>на одной линии</span> с Вами и <span>ближе 10 клеток</span>.</p>
+	<p>Вы можете поразить выстрелом вертолет врага, если он <span>на одной линии</span> с Вами.</p>
+	<p>Вы можете <span>задавить локатор врага/вертолет</span> (наехать на него).</p>
+	<p>Если Вы на "линии огня", то срабатывает "прицел"-подсказка.</p>
+	<p>Локатор при Вашем приближении "беспокоится", после наезда на него возникает новый в ином месте.</p>
+	<p>P.s.</p>
+	<p>Локатор сообщает о ходе сражения в консоль браузера (одновременное нажатие <span>Ctrl+Shift+I</span> откроет консоль).</p>									   
+ `);
 
 //тут  css-классы, их достаточно изменить в модели и css-файле
 var CSS_Classses_Changed = {};
@@ -172,7 +181,7 @@ modelData.messageEndAndCounterToZero = "конец игры, счетчик вр
 modelData.messageWhereShoot = "наносим удар по клетке с  координатами (i / j): ";
 modelData.messageWhenStart = "Игра в конкретном сеансе стартовала в  ";
 modelData.messageCannotMoveNow = "Опаньки, а танк-то может двигаться 1 раз в секунду";
-modelData.messageHaveNoContainer = "Обратите внимание вы не передали контейнер и поле будет document.body";
+modelData.messageHaveNoContainer = "Обратите внимание: у нас в разметке не было <div id='id-whole-block-for-game'> (чтоб он был, надо его раскомментировать в HTML-файле). Потому аппендим в document.body";
 modelData.messageHealthOfLocator = "здоровье локатора = ";
 modelData.messageHealthOfEnemy = "здоровье врага = ";
 modelData.messageHealthOur = "наше здоровье = ";

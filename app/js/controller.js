@@ -43,51 +43,7 @@ var controllerFor_showTankFirstTime = function (kindOfTank, /* принимае�
 
 };
 
-
-//  тут берем из импортированных данных model.js массив-модель поля _cells, наполняем _cells данными 
-//(можно эту функцию вынести из модуля controller и только вызывать её здесь)
-//То есть у нас есть массив-модель данных о происходящем на поле и (отдельно) есть отображение этой модели
-// и создаем новые данные о нем, сохраняя в этот же массив в модуле  model.js модели
-//из модуля view контроллер использует функцию view.createElement, создающую dom-элементы
-// (т.е. модуль view сообщается с моделью через контроллер)
-
-
-var _createDataModelOfField = function (_rowsNumber, _cellsNumber, _cells,
-                                        CSS_Classses_ChangedforInsideCell, CSS_Classses_ChangedforFirstInRowInsideCell,
-                                        ID_ChangedforBullet, CSS_Classses_ChangedforBullet) {
-    var _rowsNumberFinal = _rowsNumber || 20;
-    var _cellsNumberFinal = _cellsNumber || 20;
-
-    for (let i = 0; i < _rowsNumberFinal; i++) {
-        _cells[i] = [];
-        for (let j = 0; j < _cellsNumberFinal; j++) _cells[i].push({
-            /* в каждую ячейку двумерного массива пушим объект, в котором
-             два DOM-объекта: пуля и танк, изначально hidden */
-            value: null,
-            //создание dom-элемента осуществим функцией из модуля view
-            dom: view.createElement(
-                i,
-                j,
-                CSS_Classses_ChangedforInsideCell /* это "inside-cell" */,
-                CSS_Classses_ChangedforFirstInRowInsideCell /* это"clear-both inside-cell" */
-            ),
-            i: i,
-            j: j,
-            //есть пуля в модели данных, тут её стартовое положение и DOM-элемент(пока что не отображённый)
-            bullet: {
-                domBullet: view.createElementOfBullet(i, j, ID_ChangedforBullet, CSS_Classses_ChangedforBullet),
-                startPosition_I: i,
-                startPosition_J: j,
-                finalPosition_I: null,
-                finalPosition_J: null,
-                inProcess: null
-            }
-        });
-    }
-
-
-};
-
+ 
 
 //эта функция обновляет местоположение танка, давая случайное местоположение в поле. 
 //Для нашего танка tanksArmy.ourTank она применяется тоже (путем передачи функции в тот модуль), в modelFunctions.createTanksByConstructor механизм генерации случайного местоположения использует эту функцию.
@@ -1139,17 +1095,17 @@ let controller = {};
 //создает поле, объекты транспортных средств
 controller.init = function (container) {
 
-    //рисуем поле, сначала приняли контейнер или задали свой, если не был передан в вызове
-    if (typeof container === 'undefined') {
-        var container = document.body;
-        view.consoleLog(modelData.messageHaveNoContainer/* "Обратите внимание вы не передали контейнер и поле будет document.body" */
-        );
-    }
+     
 
-
-    view.createDataModelOfField(_CELL_SIZE, _CELL_SIZE, _cells,
-        CSS_Classses_Changed.forInsideCell, CSS_Classses_Changed.forFirstInRowInsideCell,
-        ID_Changed.forBullet, CSS_Classses_Changed.forBullet/* , view.createElement, view.createElementOfBullet */);
+    view.createDataModelOfField(
+		_CELL_SIZE, 
+		_CELL_SIZE, 
+		_cells,
+        CSS_Classses_Changed.forInsideCell, 
+		CSS_Classses_Changed.forFirstInRowInsideCell,
+        ID_Changed.forBullet, 
+		CSS_Classses_Changed.forBullet/* , view.createElement, view.createElementOfBullet */
+		);
 
 
     /* тут мы создаем в модуле model: tanksArmy.ourTank,  tanksArmy.enemyTank,  tanksArmy.locatorTank */
@@ -1167,14 +1123,16 @@ controller.init = function (container) {
 
     //отдает для отображения во view-модуль dom-контейнер и данные модели _cells (данные модели
     // получены из модуля model.js модели, т.е. данные модели приходят на отрисовку через посредничество контроллера)
-    view.renderField(container,
+    view.renderField(
+		container,
         _cells,
         infoPanelText,
         CSS_Classses_Changed.forWrapper,
         CSS_Classses_Changed.forInfoPanel,
         ID_Changed.forWrapper,
         ID_Changed.forInfoPanel,
-        tanksArmy.ElementByCSS
+        tanksArmy.ElementByCSS,
+		modelData.messageHaveNoContainer
     );
 
 
@@ -1574,10 +1532,13 @@ controller.shot = function () {
     _createModelOfThisShotController(tanksArmy.ourTank, tanksArmy.enemyTank);
 };
 
-controller.init(document.getElementById("forGameContainer"));//создаём поле, передавая html-контейнер
+
+
+
+controller.init(document.getElementById("id-whole-block-for-game"));//создаём поле, передавая html-контейнер
 /* controller.startGame(); */
 //controller.pauseGame();
-var cont = document.getElementById("forGameContainer")
+ 
 
 var btn1 = document.getElementById("btn1");
 btn1.addEventListener("click", controller.startGame.bind(controller));

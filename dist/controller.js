@@ -1,7 +1,7 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
+/* Object.defineProperty(exports, '__esModule', { value: true });
+ */
 let utils = {};
 
 //генерирует случ.значения в заданном диапазоне
@@ -123,7 +123,14 @@ view$1.removeElementById = function (IDtoDelete) {
     }
 };
 
-view$1.createDataModelOfField = function (_rowsNumber, _cellsNumber, _cells, CSS_Classses_ChangedforInsideCell, CSS_Classses_ChangedforFirstInRowInsideCell, ID_ChangedforBullet, CSS_Classses_ChangedforBullet /* , viewcreateElement, viewcreateElementOfBullet */) {
+//  тут берем из импортированных данных model.js массив-модель поля _cells, наполняем _cells данными 
+//(можно эту функцию вынести из модуля controller и только вызывать её здесь)
+//То есть у нас есть массив-модель данных о происходящем на поле и (отдельно) есть отображение этой модели
+// и создаем новые данные о нем, сохраняя в этот же массив в модуле  model.js модели
+//из модуля view контроллер использует функцию view.createElement, создающую dom-элементы
+// (т.е. модуль view сообщается с моделью через контроллер)
+view$1.createDataModelOfField = function (_rowsNumber, _cellsNumber, _cells, CSS_Classses_ChangedforInsideCell, CSS_Classses_ChangedforFirstInRowInsideCell, ID_ChangedforBullet, CSS_Classses_ChangedforBullet /* , viewcreateElement, viewcreateElementOfBullet */
+) {
     var _rowsNumberFinal = _rowsNumber || 20;
     var _cellsNumberFinal = _cellsNumber || 20;
 
@@ -504,16 +511,121 @@ view$1.showAdverts = function (ElementOfTankGraficByCSS) {
 // -получает от контроллера данные о стринг-значения CSS и ID отрисовываемых элементов
 // -получает от контроллера данные о html-контейнере, куда вставлять поле боя
 // -осуществляет отображение поля, используя appendChild
-view$1.renderField = function (contianer, _cells, infoPanelText, clsforWrapper, clsforInfoPanel, IDforWrapper, IDforInfoPanel, ElementOfTankGraficByCSS) {
+view$1.renderField = function (contianer, //это document.getElementById("id-whole-block-for-game")
+_cells, infoPanelText, clsforWrapper, //CSS_Classses_Changed.forWrapper = "outside-cell";
+clsforInfoPanel, IDforWrapper, //ID_Changed.forWrapper = "wrapper"; 
+IDforInfoPanel, ElementOfTankGraficByCSS, messageHaveNoContainer) {
 
-    var wrapper = document.getElementById(IDforWrapper);
+    //берем body и в его конец аппендим
+    var wholeContainer = document.body;
+
+    // вот тут просто всю готовую разметку создадим, включая document.getElementById("forGameContainer")				 
+
+
+    //вот блок для всей игры в целом, но не его будем чиcтить при пересоздании, а wrapper
+    if (contianer) {
+        var wholeBlockForGame = contianer;
+        wholeBlockForGame.className = 'whole-block-for-game';
+        wholeBlockForGame.id = 'id-whole-block-for-game';
+        wholeContainer.appendChild(wholeBlockForGame); //в body его
+        /* console.log("в if (contianer) ") */
+    }
+
+    // приняли контейнер или задали свой, если не был передан в вызове
+
+    if (!contianer) {
+        view$1.consoleLog(messageHaveNoContainer
+        /* "Обратите внимание вы не передали контейнер и аппендим в document.body" */
+        );
+        var wholeBlockForGame = document.createElement("div");
+        wholeBlockForGame.className = 'whole-block-for-game';
+        wholeBlockForGame.id = 'id-whole-block-for-game';
+        wholeContainer.appendChild(wholeBlockForGame); //в body его
+        /* console.log("НЕ в if (contianer) ") */
+    }
+
+    var widthWrapper = document.createElement("div");
+    widthWrapper.className = 'width-wrapper';
+    widthWrapper.id = 'id-width-wrapper';
+    wholeBlockForGame.appendChild(widthWrapper);
+
+    var myFlexContainer = document.createElement("div");
+    myFlexContainer.className = 'my-flex-container flex-grid-quarters';
+    myFlexContainer.id = 'id-my-flex-container';
+    widthWrapper.appendChild(myFlexContainer);
+
+    var myFlexBlockDouble = document.createElement("div");
+    myFlexBlockDouble.className = 'my-flex-block my-flex-block_double';
+    myFlexBlockDouble.id = 'forGameContainer';
+    myFlexContainer.appendChild(myFlexBlockDouble);
+
+    var myFlexBlockInfo = document.createElement("div");
+    myFlexBlockInfo.className = 'my-flex-block my-flex-block-info';
+    myFlexBlockInfo.id = 'forGameContainer';
+    myFlexContainer.appendChild(myFlexBlockInfo);
+
+    var forInfoHead = document.createElement("h3");
+    forInfoHead.className = 'forInfo';
+    forInfoHead.id = 'forInfo';
+    forInfoHead.innerHTML = "Панель подсказок";
+    myFlexBlockInfo.appendChild(forInfoHead);
+
+    var infoLine = document.createElement("div");
+    infoLine.className = 'infoLine';
+    infoLine.id = 'infoLine';
+    infoLine.innerHTML = infoPanelText;
+    myFlexBlockInfo.appendChild(infoLine);
+
+    /* 
+    +<div class='whole-block-for-game'> 
+    		+<div class='width-wrapper'> 
+    				+<div class='my-flex-container flex-grid-quarters'> 
+    				 
+    					<!-- для этого блока внутренности скриптом сейчас созданы -->
+    					+<div class='my-flex-block my-flex-block_double' id="forGameContainer"> 
+    					+</div>   
+    				 
+    					+<div class='my-flex-block'> 
+    							+<h3 id="forInfo">Панель подсказок</h3>
+    							+<div class="infoLine" id="infoLine">
+    									  <p>Вы - это танк в поле из клеток. Против Вас: вражеский вертолет и авто-локатор.</p>
+    									  <p>Для старта игры нажать кнопку <span>"Start"</span>.</p>
+    									  <p>Используйте кнопки на клавиатуре <span>&#x2190; &#x2191; &#x2192; &#x2193;</span>  для движения Вашего танка.</p>
+    									  <p>Можем двигать наш танк по диагонали: <span>'a' &#x2196;, 's'  &#x2197;, 'z'  &#x2199;,'x'  &#x2198;</span>.  </p>
+    									  <p>Ходить можно <span>1 раз в секунду</span>.</p>
+    									  <p>Кнопка <span>"Пробел"('Space')</span> - выстрел.</p>
+    									 
+    									  <p>Вертолет врага может поражать Вас поражающим излучением, если он <span>на одной линии</span> с Вами и <span>ближе 10 клеток</span>.</p>
+    									  <p>Вы можете поразить выстрелом вертолет врага, если он <span>на одной линии</span> с Вами.</p>
+    									  <p>Вы можете <span>задавить локатор врага/вертолет</span> (наехать на него).</p>
+    									  <p>Если Вы на "линии огня", то срабатывает "прицел"-подсказка.</p>
+    									  <p>Локатор при Вашем приближении "беспокоится", после наезда на него возникает новый в ином месте.</p>
+    									  <p>P.s.</p>
+    									  <p>Локатор сообщает о ходе сражения в консоль браузера (одновременное нажатие <span>Ctrl+Shift+I</span> откроет консоль).</p>
+    									   
+    							+</div>
+    					+</div>  
+    				 
+    				+</div>   
+    		+</div>  
+     
+      +</div>
+    
+    
+    
+    
+     */
+
+    //удаляем в новом сеансе игры, если был уже ID_Changed.forWrapper = "wrapper";
+    //и внутринего все клетки игрового поля удаляем (CSS_Classses_Changed.forWrapper = "outside-cell"; и все в него вложенное)
+    var wrapper = document.getElementById(IDforWrapper); //ID_Changed.forWrapper = "wrapper";
     if (wrapper) {
         wrapper.innerHTML = "";
         wrapper.parentNode.removeChild(wrapper);
     }
 
     wrapper = document.createElement("div");
-    wrapper.className = clsforWrapper;
+    wrapper.className = clsforWrapper; //CSS_Classses_Changed.forWrapper = "outside-cell";
     wrapper.id = IDforWrapper;
 
     var info = document.getElementById(IDforInfoPanel);
@@ -579,14 +691,22 @@ view$1.renderField = function (contianer, _cells, infoPanelText, clsforWrapper, 
     buttonsBlock.appendChild(btn2);
     buttonsBlock.appendChild(btnStop);
 
-    contianer.appendChild(headline);
+    /* contianer.appendChild(headline); 
+    //вместо 	contianer будет myFlexBlockDouble
+    */
+    myFlexBlockDouble.appendChild(headline);
 
     ElementOfTankGraficByCSS.id = "tiny";
 
     headline.appendChild(ElementOfTankGraficByCSS);
 
-    contianer.appendChild(wrapper);
-    contianer.appendChild(buttonsBlock);
+    /*  contianer.appendChild(wrapper);
+     contianer.appendChild(buttonsBlock);
+    //вместо 	contianer будет myFlexBlockDouble
+    */
+    myFlexBlockDouble.appendChild(wrapper);
+    myFlexBlockDouble.appendChild(buttonsBlock);
+
     /*  contianer.appendChild(info); */
 
     /* setTimeout(function () {
@@ -789,12 +909,21 @@ tanksArmy.ourTank = null;
 tanksArmy.enemyTank = null;
 tanksArmy.locatorTank = null;
 
-var infoPanelText = `<pre> press keys \u2190 \u2191 \u2192 \u2193 for moving to the left, right, top, bottom
-     press 'a' for moving to the top-left \u2196
-     press 's' for moving to the top-right \u2197
-     press 'z' for moving to the bottom-left \u2199
-     press 'x' for moving to the bottom-right \u2198
-     press 'space' to make a shot</pre>`;
+var infoPanelText = ` 
+	<p>Вы - это танк в поле из клеток. Против Вас: вражеский вертолет и авто-локатор.</p>
+	<p>Для старта игры нажать кнопку <span>"Start"</span>.</p>
+	<p>Используйте кнопки на клавиатуре <span>&#x2190; &#x2191; &#x2192; &#x2193;</span>  для движения Вашего танка.</p>
+	<p>Можем двигать наш танк по диагонали: <span>'a' &#x2196;, 's'  &#x2197;, 'z'  &#x2199;,'x'  &#x2198;</span>.  </p>
+	<p>Ходить можно <span>1 раз в секунду</span>.</p>
+	<p>Кнопка <span>"Пробел"('Space')</span> - выстрел.</p>
+	<p>Вертолет врага может поражать Вас поражающим излучением, если он <span>на одной линии</span> с Вами и <span>ближе 10 клеток</span>.</p>
+	<p>Вы можете поразить выстрелом вертолет врага, если он <span>на одной линии</span> с Вами.</p>
+	<p>Вы можете <span>задавить локатор врага/вертолет</span> (наехать на него).</p>
+	<p>Если Вы на "линии огня", то срабатывает "прицел"-подсказка.</p>
+	<p>Локатор при Вашем приближении "беспокоится", после наезда на него возникает новый в ином месте.</p>
+	<p>P.s.</p>
+	<p>Локатор сообщает о ходе сражения в консоль браузера (одновременное нажатие <span>Ctrl+Shift+I</span> откроет консоль).</p>									   
+ `;
 
 //тут  css-классы, их достаточно изменить в модели и css-файле
 var CSS_Classses_Changed = {};
@@ -874,7 +1003,7 @@ modelData.messageEndAndCounterToZero = "конец игры, счетчик вр
 modelData.messageWhereShoot = "наносим удар по клетке с  координатами (i / j): ";
 modelData.messageWhenStart = "Игра в конкретном сеансе стартовала в  ";
 modelData.messageCannotMoveNow = "Опаньки, а танк-то может двигаться 1 раз в секунду";
-modelData.messageHaveNoContainer = "Обратите внимание вы не передали контейнер и поле будет document.body";
+modelData.messageHaveNoContainer = "Обратите внимание: у нас в разметке не было <div id='id-whole-block-for-game'> (чтоб он был, надо его раскомментировать в HTML-файле). Потому аппендим в document.body";
 modelData.messageHealthOfLocator = "здоровье локатора = ";
 modelData.messageHealthOfEnemy = "здоровье врага = ";
 modelData.messageHealthOur = "наше здоровье = ";
@@ -1844,14 +1973,8 @@ let controller = {};
 //создает поле, объекты транспортных средств
 controller.init = function (container) {
 
-    //рисуем поле, сначала приняли контейнер или задали свой, если не был передан в вызове
-    if (typeof container === 'undefined') {
-        var container = document.body;
-        view$1.consoleLog(modelData.messageHaveNoContainer /* "Обратите внимание вы не передали контейнер и поле будет document.body" */
-        );
-    }
-
-    view$1.createDataModelOfField(_CELL_SIZE, _CELL_SIZE, _cells, CSS_Classses_Changed.forInsideCell, CSS_Classses_Changed.forFirstInRowInsideCell, ID_Changed.forBullet, CSS_Classses_Changed.forBullet /* , view.createElement, view.createElementOfBullet */);
+    view$1.createDataModelOfField(_CELL_SIZE, _CELL_SIZE, _cells, CSS_Classses_Changed.forInsideCell, CSS_Classses_Changed.forFirstInRowInsideCell, ID_Changed.forBullet, CSS_Classses_Changed.forBullet /* , view.createElement, view.createElementOfBullet */
+    );
 
     /* тут мы создаем в модуле model: tanksArmy.ourTank,  tanksArmy.enemyTank,  tanksArmy.locatorTank */
     modelFunctions.createTanksByConstructor(viewMovingModule.getRandomIntFromIntervalInArray, /* отдаем функцию из модуля utils */
@@ -1865,7 +1988,7 @@ controller.init = function (container) {
 
     //отдает для отображения во view-модуль dom-контейнер и данные модели _cells (данные модели
     // получены из модуля model.js модели, т.е. данные модели приходят на отрисовку через посредничество контроллера)
-    view$1.renderField(container, _cells, infoPanelText, CSS_Classses_Changed.forWrapper, CSS_Classses_Changed.forInfoPanel, ID_Changed.forWrapper, ID_Changed.forInfoPanel, tanksArmy.ElementByCSS);
+    view$1.renderField(container, _cells, infoPanelText, CSS_Classses_Changed.forWrapper, CSS_Classses_Changed.forInfoPanel, ID_Changed.forWrapper, ID_Changed.forInfoPanel, tanksArmy.ElementByCSS, modelData.messageHaveNoContainer);
 
     controllerFor_showTankFirstTime(tanksArmy.ourTank, CSSCLASSFOR_OUR_TANK, tanksArmy.ourTank.ElementByCSS /* тут null, так как наш танк рисуем png-картинкой, а не canvas-ом */);
     controllerFor_showTankFirstTime(tanksArmy.enemyTank, CSSCLASSFOR_ENEMY_TANK, tanksArmy.enemyTank.ElementByCSS);
@@ -2197,10 +2320,10 @@ controller.shot = function () {
     _createModelOfThisShotController(tanksArmy.ourTank, tanksArmy.enemyTank);
 };
 
-controller.init(document.getElementById("forGameContainer")); //создаём поле, передавая html-контейнер
+controller.init(document.getElementById("id-whole-block-for-game")); //создаём поле, передавая html-контейнер
 /* controller.startGame(); */
 //controller.pauseGame();
-var cont = document.getElementById("forGameContainer");
+
 
 var btn1 = document.getElementById("btn1");
 btn1.addEventListener("click", controller.startGame.bind(controller));
@@ -2214,4 +2337,4 @@ btn2.addEventListener("click", controller.pauseGame.bind(controller));
 var btn3 = document.getElementById("btnStop");
 btn3.addEventListener("click", controller.endGame.bind(controller));
 
-exports.controller = controller;
+// exports.controller = controller;

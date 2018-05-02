@@ -133,10 +133,20 @@ view.removeElementById = function (IDtoDelete) {
     }
 }
 
-
-view.createDataModelOfField = function (_rowsNumber, _cellsNumber, _cells,
-                                        CSS_Classses_ChangedforInsideCell, CSS_Classses_ChangedforFirstInRowInsideCell,
-                                        ID_ChangedforBullet, CSS_Classses_ChangedforBullet /* , viewcreateElement, viewcreateElementOfBullet */) {
+//  тут берем из импортированных данных model.js массив-модель поля _cells, наполняем _cells данными 
+//(можно эту функцию вынести из модуля controller и только вызывать её здесь)
+//То есть у нас есть массив-модель данных о происходящем на поле и (отдельно) есть отображение этой модели
+// и создаем новые данные о нем, сохраняя в этот же массив в модуле  model.js модели
+//из модуля view контроллер использует функцию view.createElement, создающую dom-элементы
+// (т.е. модуль view сообщается с моделью через контроллер)
+view.createDataModelOfField = function (_rowsNumber, 
+										_cellsNumber, 
+										_cells,
+                                        CSS_Classses_ChangedforInsideCell, 
+										CSS_Classses_ChangedforFirstInRowInsideCell,
+                                        ID_ChangedforBullet, 
+										CSS_Classses_ChangedforBullet /* , viewcreateElement, viewcreateElementOfBullet */
+										) {
     var _rowsNumberFinal = _rowsNumber || 20;
     var _cellsNumberFinal = _cellsNumber || 20;
 
@@ -556,23 +566,138 @@ view.showAdverts = function (ElementOfTankGraficByCSS) {
 // -получает от контроллера данные о стринг-значения CSS и ID отрисовываемых элементов
 // -получает от контроллера данные о html-контейнере, куда вставлять поле боя
 // -осуществляет отображение поля, используя appendChild
-view.renderField = function (contianer,
+view.renderField = function (contianer, //это document.getElementById("id-whole-block-for-game")
                              _cells,
                              infoPanelText,
-                             clsforWrapper,
+                             clsforWrapper, //CSS_Classses_Changed.forWrapper = "outside-cell";
                              clsforInfoPanel,
-                             IDforWrapper,
+                             IDforWrapper,  //ID_Changed.forWrapper = "wrapper"; 
                              IDforInfoPanel,
-                             ElementOfTankGraficByCSS) {
+                             ElementOfTankGraficByCSS,
+							 messageHaveNoContainer) {
 
-    var wrapper = document.getElementById(IDforWrapper);
+	//берем body и в его конец аппендим
+	var wholeContainer = document.body;
+ 
+	// вот тут просто всю готовую разметку создадим, включая document.getElementById("forGameContainer")				 
+	 		
+	
+	//вот блок для всей игры в целом, но не его будем чиcтить при пересоздании, а wrapper
+	if (contianer) {
+        var wholeBlockForGame = contianer;
+    wholeBlockForGame.className = 'whole-block-for-game';
+    wholeBlockForGame.id = 'id-whole-block-for-game';
+	wholeContainer.appendChild(wholeBlockForGame);//в body его
+	/* console.log("в if (contianer) ") */
+    }
+	 
+	 // приняли контейнер или задали свой, если не был передан в вызове
+  
+    if (!contianer) {
+		view.consoleLog(messageHaveNoContainer
+		/* "Обратите внимание вы не передали контейнер и аппендим в document.body" */
+        );
+		        var wholeBlockForGame = document.createElement("div");
+    wholeBlockForGame.className = 'whole-block-for-game';
+    wholeBlockForGame.id = 'id-whole-block-for-game';
+	wholeContainer.appendChild(wholeBlockForGame);//в body его
+	/* console.log("НЕ в if (contianer) ") */
+    }
+	
+ 
+	
+	
+	 
+	
+	var widthWrapper = document.createElement("div");
+    widthWrapper.className = 'width-wrapper';
+    widthWrapper.id = 'id-width-wrapper';
+	wholeBlockForGame.appendChild(widthWrapper);
+	
+	var myFlexContainer = document.createElement("div");
+    myFlexContainer.className = 'my-flex-container flex-grid-quarters';
+    myFlexContainer.id = 'id-my-flex-container';
+	widthWrapper.appendChild(myFlexContainer);
+	
+	var myFlexBlockDouble = document.createElement("div");
+    myFlexBlockDouble.className = 'my-flex-block my-flex-block_double';
+    myFlexBlockDouble.id = 'forGameContainer';
+	myFlexContainer.appendChild(myFlexBlockDouble);
+	
+	var myFlexBlockInfo = document.createElement("div");
+    myFlexBlockInfo.className = 'my-flex-block my-flex-block-info';
+    myFlexBlockInfo.id = 'forGameContainer';
+	myFlexContainer.appendChild(myFlexBlockInfo);
+	
+	var forInfoHead = document.createElement("h3");
+    forInfoHead.className = 'forInfo';
+    forInfoHead.id = 'forInfo';
+	forInfoHead.innerHTML = "Панель подсказок";
+	myFlexBlockInfo.appendChild(forInfoHead);
+	 
+	
+	var infoLine = document.createElement("div");
+    infoLine.className = 'infoLine';
+    infoLine.id = 'infoLine';
+	infoLine.innerHTML = infoPanelText;
+	myFlexBlockInfo.appendChild(infoLine);
+	 
+	
+	
+/* 
++<div class='whole-block-for-game'> 
+		+<div class='width-wrapper'> 
+				+<div class='my-flex-container flex-grid-quarters'> 
+				 
+					<!-- для этого блока внутренности скриптом сейчас созданы -->
+					+<div class='my-flex-block my-flex-block_double' id="forGameContainer"> 
+					+</div>   
+				 
+					+<div class='my-flex-block'> 
+							+<h3 id="forInfo">Панель подсказок</h3>
+							+<div class="infoLine" id="infoLine">
+									  <p>Вы - это танк в поле из клеток. Против Вас: вражеский вертолет и авто-локатор.</p>
+									  <p>Для старта игры нажать кнопку <span>"Start"</span>.</p>
+									  <p>Используйте кнопки на клавиатуре <span>&#x2190; &#x2191; &#x2192; &#x2193;</span>  для движения Вашего танка.</p>
+									  <p>Можем двигать наш танк по диагонали: <span>'a' &#x2196;, 's'  &#x2197;, 'z'  &#x2199;,'x'  &#x2198;</span>.  </p>
+									  <p>Ходить можно <span>1 раз в секунду</span>.</p>
+									  <p>Кнопка <span>"Пробел"('Space')</span> - выстрел.</p>
+									 
+									  <p>Вертолет врага может поражать Вас поражающим излучением, если он <span>на одной линии</span> с Вами и <span>ближе 10 клеток</span>.</p>
+									  <p>Вы можете поразить выстрелом вертолет врага, если он <span>на одной линии</span> с Вами.</p>
+									  <p>Вы можете <span>задавить локатор врага/вертолет</span> (наехать на него).</p>
+									  <p>Если Вы на "линии огня", то срабатывает "прицел"-подсказка.</p>
+									  <p>Локатор при Вашем приближении "беспокоится", после наезда на него возникает новый в ином месте.</p>
+									  <p>P.s.</p>
+									  <p>Локатор сообщает о ходе сражения в консоль браузера (одновременное нажатие <span>Ctrl+Shift+I</span> откроет консоль).</p>
+									   
+							+</div>
+					+</div>  
+				 
+				+</div>   
+		+</div>  
+ 
+  +</div>
+
+
+
+
+ */
+
+
+
+		
+							 
+	//удаляем в новом сеансе игры, если был уже ID_Changed.forWrapper = "wrapper";
+	//и внутринего все клетки игрового поля удаляем (CSS_Classses_Changed.forWrapper = "outside-cell"; и все в него вложенное)
+    var wrapper = document.getElementById(IDforWrapper); //ID_Changed.forWrapper = "wrapper";
     if (wrapper) {
         wrapper.innerHTML = "";
         wrapper.parentNode.removeChild(wrapper);
     }
 
     wrapper = document.createElement("div");
-    wrapper.className = clsforWrapper;
+    wrapper.className = clsforWrapper;//CSS_Classses_Changed.forWrapper = "outside-cell";
     wrapper.id = IDforWrapper;
 
     var info = document.getElementById(IDforInfoPanel);
@@ -600,6 +725,7 @@ view.renderField = function (contianer,
     var headline = document.createElement("H3");
     headline.innerHTML = "Worldie Of Tanks";
     headline.id = "WorldieOfTanksID";
+	 
 
     var buttonsBlock = document.createElement("div");
     buttonsBlock.className = "buttons-block";
@@ -644,15 +770,24 @@ view.renderField = function (contianer,
     buttonsBlock.appendChild(btnStop);
 
 
-    contianer.appendChild(headline);
+    /* contianer.appendChild(headline); 
+	//вместо 	contianer будет myFlexBlockDouble
+	*/
+myFlexBlockDouble.appendChild(headline);
 
     ElementOfTankGraficByCSS.id = "tiny";
 
     headline.appendChild(ElementOfTankGraficByCSS);
 
 
-    contianer.appendChild(wrapper);
+   /*  contianer.appendChild(wrapper);
     contianer.appendChild(buttonsBlock);
+//вместо 	contianer будет myFlexBlockDouble
+ */
+	myFlexBlockDouble.appendChild(wrapper);
+    myFlexBlockDouble.appendChild(buttonsBlock);
+	
+	
     /*  contianer.appendChild(info); */
 
     /* setTimeout(function () {
